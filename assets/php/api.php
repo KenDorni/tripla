@@ -4,16 +4,16 @@ $method = $_SERVER["REQUEST_METHOD"];
 
 switch ($method) {
     case "POST":
-        include "create.php";
+        include "crud/create.php";
         break;
     case "GET":
-        include "read.php";
+        include "crud/read.php";
         break;
     case "PUT":
-        include "update.php";
+        include "crud/update.php";
         break;
     case "DELETE":
-        include "delete.php";
+        include "crud/delete.php";
         break;
     default:
         http_response_code(405);
