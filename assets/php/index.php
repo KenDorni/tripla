@@ -1,6 +1,7 @@
 <?php
 
 $method = $_SERVER["REQUEST_METHOD"];
+require_once "functions/functions.php";
 
 switch ($method) {
     case "POST":
