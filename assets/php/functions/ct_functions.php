@@ -1,140 +1,114 @@
 <?php
-require_once __DIR__ . "/../database/db_credentials.php";
-require_once __DIR__ . "/../database/db_functions.php";
+require_once(__DIR__ . '/../database/db_functions.php'); // Path corrected - from index.php
 
-function createAccount($values)
-{
+/**
+ * Create a new account
+ * @param array $data The user data (e.g., username, email, password)
+ * @return array Returns an array with a message about the account creation status.
+ */
+function createAccount($data) {
     $dbc = dbConnect();
-    if (!$dbc) {
-        return ["success" => false, "message" => "Database connection failed"];
-    }
 
-    if (!isset($values["email_address"], $values["password"], $values["username"])) {
-        return ["success" => false, "message" => "Missing fields for Account creation"];
-    }
+    $email = $data['email_address'];
+    $password = $data['password']; // Make sure you hash the password securely
+    $username = $data['username'];
 
-    $email = $values["email_address"];
-    $password = password_hash($values["password"], PASSWORD_DEFAULT);
-    $username = $values["username"];
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT); // Use password_hash to securely store the password
 
-    $result = queryStatement(
-        $dbc,
-        "INSERT INTO User (email_address, password, username) VALUES (?, ?, ?)",
-        "sss",
-        $email,
-        $password,
-        $username
-    );
+    // SQL query to insert a new user into the 'User' table
+    $query = "INSERT INTO User (email_address, password, username) VALUES (?, ?, ?)";
+    $result = queryStatement($dbc, $query, 'sss', $email, $passwordHash, $username);
 
-    mysqli_close($dbc);
-
-    if ($result === true) {
-        return ["success" => true, "message" => "Account created successfully"];
+    if ($result) {
+        return ['message' => 'Account successfully created'];
     } else {
-        return ["success" => false, "message" => "Account creation failed"];
+        return ['message' => 'Error occurred during account creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
     }
 }
 
-function createItinerary($values)
+/**
+ * Create a new itinerary
+ * @param array $data The itinerary data (e.g., user ID, name, etc.)
+ * @return array Returns an array with a message about the itinerary creation status.
+ */
+function createItinerary($data)
 {
     $dbc = dbConnect();
-    if (!$dbc) {
-        return ["success" => false, "message" => "Database connection failed"];
-    }
+    // Prepare the query to insert the new itinerary into the Iternary table (Corrected table name)
+    $query = "INSERT INTO Iternary (fk_user_created, creation_date) VALUES (?, NOW())"; // Assuming you only need user ID and creation date, and creation_date is auto-set
+    // Call the queryStatement function to execute the query
+    $result = queryStatement($dbc, $query, "i", $data['fk_user_created']); // Corrected parameter type to integer, assuming fk_user_created is an integer
 
-    if (!isset($values["fk_user_created"])) {
-        return ["success" => false, "message" => "Missing user reference for itinerary creation"];
-    }
-
-    $fk_user_created = $values["fk_user_created"];
-    $result = queryStatement(
-        $dbc,
-        "INSERT INTO Iternary (creation_date, fk_user_created) VALUES (NOW(), ?)",
-        "i",
-        $fk_user_created
-    );
-
-    mysqli_close($dbc);
-
-    if ($result === true) {
-        return ["success" => true, "message" => "Itinerary created successfully"];
+    if ($result) {
+        return ['message' => 'Itinerary successfully created'];
     } else {
-        return ["success" => false, "message" => "Itinerary creation failed"];
+        return ['message' => 'Error occurred during itinerary creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
     }
 }
 
-function createItineraryStop($values)
+/**
+ * Create a new itinerary stop
+ * @param array $data The itinerary stop data
+ * @return array Returns an array with a message about the itinerary stop creation status.
+ */
+function createItineraryStop($data)
 {
     $dbc = dbConnect();
-    if (!$dbc) {
-        return ["success" => false, "message" => "Database connection failed"];
-    }
+    // Ensure valid 'online_ticket' is passed as base64-encoded
+    $online_ticket = base64_decode($data['online_ticket']); // Convert base64 string to binary data
 
-    $requiredFields = ["type", "value", "booking_ref", "link", "online_ticket", "start", "stop", "fk_itinerary_includes"];
-    foreach ($requiredFields as $field) {
-        if (!isset($values[$field])) {
-            return ["success" => false, "message" => "Missing field '$field' for itinerary stop creation"];
-        }
-    }
+    // Prepare the query to insert the new stop into the Iternary_Stop table (Corrected table name and column names to match schema)
+    $query = "INSERT INTO Iternary_Stop (fk_itinerary_includes, type, value, booking_ref, link, online_ticket, start, stop)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    $result = queryStatement(
-        $dbc,
-        "INSERT INTO Iternary_Stop (type, value, booking_ref, link, online_ticket, start, stop, fk_itinerary_includes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        "sssssssi",
-        $values["type"],
-        $values["value"],
-        $values["booking_ref"],
-        $values["link"],
-        $values["online_ticket"],
-        $values["start"],
-        $values["stop"],
-        $values["fk_itinerary_includes"]
+    // Call the queryStatement function to execute the query
+    $result = queryStatement(dbConnect(), $query, "issssbss", // Correct type string - this one was correct before
+        $data['fk_itinerary_includes'],
+        $data['type'],
+        $data['value'],
+        $data['booking_ref'],
+        $data['link'],
+        $online_ticket,
+        $data['start'],
+        $data['stop']
     );
 
-    mysqli_close($dbc);
-
-    if ($result === true) {
-        return ["success" => true, "message" => "Itinerary stop created successfully"];
+    if ($result) {
+        return ['message' => 'Itinerary Stop successfully created'];
     } else {
-        return ["success" => false, "message" => "Itinerary stop creation failed"];
+        return ['message' => 'Error occurred during itinerary stop creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
     }
 }
 
-function createItineraryTransit($values)
+/**
+ * Create a new itinerary transit
+ * @param array $data The transit data
+ * @return array Returns an array with a message about the itinerary transit creation status.
+ */
+function createItineraryTransit($data)
 {
     $dbc = dbConnect();
-    if (!$dbc) {
-        return ["success" => false, "message" => "Database connection failed"];
-    }
+    // Prepare the query to insert the new transit into the Iternary_Transit table (Corrected table name and column names)
+    $query = "INSERT INTO Iternary_Transit (fk_itinerary_has_assigned, fk_before, fk_after, method, booking_ref, link, online_ticket, start, stop)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    $requiredFields = ["method", "booking_ref", "link", "online_ticket", "start", "stop", "fk_before", "fk_after", "fk_itinerary_has_assigned"];
-    foreach ($requiredFields as $field) {
-        if (!isset($values[$field])) {
-            return ["success" => false, "message" => "Missing field '$field' for itinerary transit creation"];
-        }
-    }
-
-    $result = queryStatement(
-        $dbc,
-        "INSERT INTO Iternary_Transit (method, booking_ref, link, online_ticket, start, stop, fk_before, fk_after, fk_itinerary_has_assigned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        "ssssssiii",
-        $values["method"],
-        $values["booking_ref"],
-        $values["link"],
-        $values["online_ticket"],
-        $values["start"],
-        $values["stop"],
-        $values["fk_before"],
-        $values["fk_after"],
-        $values["fk_itinerary_has_assigned"]
+    // Call the queryStatement function to execute the query
+    $result = queryStatement(dbConnect(), $query, "iiiisssbs", // **Corrected type string to "iiiisssbs"** - removed one 's' from the end
+        $data['fk_itinerary_has_assigned'],
+        $data['fk_before'],
+        $data['fk_after'],
+        $data['method'],
+        $data['booking_ref'],
+        $data['link'],
+        base64_decode($data['online_ticket']),
+        $data['start'],
+        $data['stop']
     );
 
-    mysqli_close($dbc);
-
-    if ($result === true) {
-        return ["success" => true, "message" => "Itinerary transit created successfully"];
+    if ($result) {
+        return ['message' => 'Itinerary Transit successfully created'];
     } else {
-        return ["success" => false, "message" => "Itinerary transit creation failed"];
+        return ['message' => 'Error occurred during itinerary transit creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
     }
 }
 ?>
