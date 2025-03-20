@@ -1,25 +1,30 @@
 <?php
+header('Content-Type: application/json');
+session_start();
 
 $method = $_SERVER["REQUEST_METHOD"];
-require_once "functions/functions.php";
+$data = json_decode(file_get_contents("php://input"), true);
+$responseMessages = [];
 
 switch ($method) {
     case "POST":
-        include "crud/create.php";
+        include __DIR__ . "/php/crud/create.php";
         break;
     case "GET":
-        include "crud/read.php";
+        include __DIR__ . "/php/crud/read.php";
         break;
     case "PUT":
-        include "crud/update.php";
+        include __DIR__ . "/php/crud/update.php";
         break;
     case "DELETE":
-        include "crud/delete.php";
+        include __DIR__ . "/php/crud/delete.php";
         break;
     default:
         http_response_code(405);
-        echo json_encode(array("message" => "Method not allowed"));
+        $responseMessages[] = ["message" => "Method not allowed"];
         break;
 }
+
+echo json_encode($responseMessages);
 
 ?>
