@@ -58,7 +58,6 @@ function createItineraryTransit($data)
 {
     $dbc = dbConnect();
 
-    // Only check if fk_itinerary_has_assigned exists
     $queryHasAssigned = "SELECT * FROM Itinerary WHERE pk_itinerary = ?";
     $stmtHasAssigned = mysqli_prepare($dbc, $queryHasAssigned);
     mysqli_stmt_bind_param($stmtHasAssigned, "i", $data['fk_itinerary_has_assigned']);
@@ -69,7 +68,6 @@ function createItineraryTransit($data)
         return ['message' => 'Error: fk_itinerary_has_assigned does not exist in Itinerary table'];
     }
 
-    // Proceed to insert the transit since the fk_itinerary_has_assigned is valid
     $query = "INSERT INTO Itinerary_Transit (fk_itinerary_has_assigned, method, booking_ref, link, online_ticket, start, stop)
               VALUES (?, ?, ?, ?, ?, ?, ?)";
     $result = queryStatement($dbc, $query, "issssbs",
