@@ -1,48 +1,85 @@
 <?php
-require_once(__DIR__ . '/../database/db_functions.php'); // Path corrected - from index.php
-require_once(__DIR__ . '/../functions/ct_functions.php');   // Path corrected - from index.php
+require_once(__DIR__ . '/../database/db_functions.php');
+require_once(__DIR__ . '/../functions/ct_functions.php');
 
-// We are using the $responseMessages array from index.php, no need to redefine it here.
-
-// Ensure valid payload - This check is likely redundant as index.php already checks for Type and Value.
-// However, keeping it for safety if create.php might be accessed directly in the future.
-if (!isset($data['Type']) || !isset($data['Value'])) { // Corrected from 'Values' to 'Value' to match Payload example
+if (!isset($data['Type']) || !isset($data['Value'])) {
     $responseMessages[] = ["message" => "Invalid payload: missing Type or Value"];
-    // No echo json_encode and exit here, index.php handles that
-    return; // Stop execution of create.php, returning to index.php
+    echo json_encode($responseMessages);
+    exit;
 }
 
-// Determine the Type and call the corresponding function
 switch ($data['Type']) {
     case 'Account':
-        // Call function to create account
-        $result = createAccount($data['Value']); // Corrected from 'Values' to 'Value'
+        $result = createAccount($data['Value']);
+        //  {
+        //      "Type": "Account",
+        //      "Value": {
+        //          "email_address": "user@example.com",
+        //          "password": "password123",
+        //          "username": "username1"
+        //      }
+        //  }
+
         break;
-    case 'Iternary': // Corrected spelling to 'Itinerary' to match SQL and general English spelling
-        // Call function to create itinerary
-        $result = createItinerary($data['Value']); // Corrected from 'Values' to 'Value'
+    case 'Itinerary':  // Changed from Iternary to Itinerary
+        $result = createItinerary($data['Value']);
+        //  {
+        //      "Type": "Itinerary",
+        //      "Value": {
+        //          "fk_user_created": 1
+        //      }
+        //  }
+
         break;
-    case 'Iternary_Stop': // Corrected spelling to 'Itinerary' to match SQL
-        // Call function to create itinerary stop
-        $result = createItineraryStop($data['Value']); // Corrected from 'Values' to 'Value'
+    case 'Itinerary_Stop':  
+        $result = createItineraryStop($data['Value']);
+        //  {
+        //      "Type": "Itinerary_Stop",
+        //      "Value": {
+        //          "fk_itinerary_includes": 1,
+        //          "type": "Train",
+        //          "value": "Train 123",
+        //          "booking_ref": "ABC123",
+        //          "link": "http://example.com",
+        //          "online_ticket": "base64_encoded_ticket_string",
+        //          "start": "2025-03-21 10:00:00",
+        //          "stop": "2025-03-21 12:00:00"
+        //      }
+        //  }
+
         break;
-    case 'Iternary_Transit': // Corrected spelling to 'Itinerary' to match SQL
-        // Call function to create itinerary transit
-        $result = createItineraryTransit($data['Value']); // Corrected from 'Values' to 'Value'
+    case 'Itinerary_Transit':  
+        $result = createItineraryTransit($data['Value']);
+        //  {
+        //      "Type": "Itinerary_Transit",
+        //      "Value": {
+        //          "fk_itinerary_has_assigned": 1,
+        //          "fk_before": 1,
+        //          "fk_after": 2,
+        //          "method": "Train",
+        //          "booking_ref": "TR123",
+        //          "link": "http://example.com",
+        //          "online_ticket": "base64_encoded_ticket_string",
+        //          "start": "2025-03-21 13:00:00",
+        //          "stop": "2025-03-21 15:00:00"
+        //      }
+        //  }
+        
         break;
     default:
         $responseMessages[] = ["message" => "Invalid Type"];
-        // No echo json_encode and exit here, index.php handles that
-        return; // Stop execution of create.php, returning to index.php
+        echo json_encode($responseMessages);
+        exit;
 }
 
-if ($result && is_array($result) && isset($result['message'])) { // Check if result is a message array
-    $responseMessages[] = $result; // Add the message from the function to responseMessages
-} elseif ($result) { // If $result is true but not a message array (assuming success without specific message)
+if ($result && is_array($result) && isset($result['message'])) {
+    $responseMessages[] = $result;
+} elseif ($result) {
     $responseMessages[] = ["message" => "Creation successful"];
 } else {
     $responseMessages[] = ["message" => "Error occurred during creation"];
 }
 
-// No echo json_encode here, index.php handles that
+echo json_encode($responseMessages);
+exit;
 ?>

@@ -1,68 +1,42 @@
 <?php
-require_once(__DIR__ . '/../database/db_functions.php'); // Path corrected - from index.php
+require_once(__DIR__ . '/../database/db_functions.php');
 
-/**
- * Create a new account
- * @param array $data The user data (e.g., username, email, password)
- * @return array Returns an array with a message about the account creation status.
- */
 function createAccount($data) {
     $dbc = dbConnect();
-
     $email = $data['email_address'];
-    $password = $data['password']; // Make sure you hash the password securely
+    $password = $data['password'];
     $username = $data['username'];
-
-    $passwordHash = password_hash($password, PASSWORD_BCRYPT); // Use password_hash to securely store the password
-
-    // SQL query to insert a new user into the 'User' table
+    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
     $query = "INSERT INTO User (email_address, password, username) VALUES (?, ?, ?)";
     $result = queryStatement($dbc, $query, 'sss', $email, $passwordHash, $username);
 
     if ($result) {
         return ['message' => 'Account successfully created'];
     } else {
-        return ['message' => 'Error occurred during account creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
+        return ['message' => 'Error occurred during account creation', 'db_error' => mysqli_error($dbc)];
     }
 }
 
-/**
- * Create a new itinerary
- * @param array $data The itinerary data (e.g., user ID, name, etc.)
- * @return array Returns an array with a message about the itinerary creation status.
- */
 function createItinerary($data)
 {
     $dbc = dbConnect();
-    // Prepare the query to insert the new itinerary into the Iternary table (Corrected table name)
-    $query = "INSERT INTO Iternary (fk_user_created, creation_date) VALUES (?, NOW())"; // Assuming you only need user ID and creation date, and creation_date is auto-set
-    // Call the queryStatement function to execute the query
-    $result = queryStatement($dbc, $query, "i", $data['fk_user_created']); // Corrected parameter type to integer, assuming fk_user_created is an integer
+    $query = "INSERT INTO Itinerary (fk_user_created, creation_date) VALUES (?, NOW())";
+    $result = queryStatement($dbc, $query, "i", $data['fk_user_created']);
 
     if ($result) {
         return ['message' => 'Itinerary successfully created'];
     } else {
-        return ['message' => 'Error occurred during itinerary creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
+        return ['message' => 'Error occurred during itinerary creation', 'db_error' => mysqli_error($dbc)];
     }
 }
 
-/**
- * Create a new itinerary stop
- * @param array $data The itinerary stop data
- * @return array Returns an array with a message about the itinerary stop creation status.
- */
 function createItineraryStop($data)
 {
     $dbc = dbConnect();
-    // Ensure valid 'online_ticket' is passed as base64-encoded
-    $online_ticket = base64_decode($data['online_ticket']); // Convert base64 string to binary data
-
-    // Prepare the query to insert the new stop into the Iternary_Stop table (Corrected table name and column names to match schema)
-    $query = "INSERT INTO Iternary_Stop (fk_itinerary_includes, type, value, booking_ref, link, online_ticket, start, stop)
+    $online_ticket = base64_decode($data['online_ticket']);
+    $query = "INSERT INTO Itinerary_Stop (fk_itinerary_includes, type, value, booking_ref, link, online_ticket, start, stop)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-    // Call the queryStatement function to execute the query
-    $result = queryStatement(dbConnect(), $query, "issssbss", // Correct type string - this one was correct before
+    $result = queryStatement($dbc, $query, "issssbss",
         $data['fk_itinerary_includes'],
         $data['type'],
         $data['value'],
@@ -76,27 +50,30 @@ function createItineraryStop($data)
     if ($result) {
         return ['message' => 'Itinerary Stop successfully created'];
     } else {
-        return ['message' => 'Error occurred during itinerary stop creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
+        return ['message' => 'Error occurred during itinerary stop creation', 'db_error' => mysqli_error($dbc)];
     }
 }
 
-/**
- * Create a new itinerary transit
- * @param array $data The transit data
- * @return array Returns an array with a message about the itinerary transit creation status.
- */
 function createItineraryTransit($data)
 {
     $dbc = dbConnect();
-    // Prepare the query to insert the new transit into the Iternary_Transit table (Corrected table name and column names)
-    $query = "INSERT INTO Iternary_Transit (fk_itinerary_has_assigned, fk_before, fk_after, method, booking_ref, link, online_ticket, start, stop)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    // Call the queryStatement function to execute the query
-    $result = queryStatement(dbConnect(), $query, "iiiisssbs", // **Corrected type string to "iiiisssbs"** - removed one 's' from the end
+    // Only check if fk_itinerary_has_assigned exists
+    $queryHasAssigned = "SELECT * FROM Itinerary WHERE pk_itinerary = ?";
+    $stmtHasAssigned = mysqli_prepare($dbc, $queryHasAssigned);
+    mysqli_stmt_bind_param($stmtHasAssigned, "i", $data['fk_itinerary_has_assigned']);
+    mysqli_stmt_execute($stmtHasAssigned);
+    $resultHasAssigned = mysqli_stmt_get_result($stmtHasAssigned);
+    
+    if (mysqli_num_rows($resultHasAssigned) == 0) {
+        return ['message' => 'Error: fk_itinerary_has_assigned does not exist in Itinerary table'];
+    }
+
+    // Proceed to insert the transit since the fk_itinerary_has_assigned is valid
+    $query = "INSERT INTO Itinerary_Transit (fk_itinerary_has_assigned, method, booking_ref, link, online_ticket, start, stop)
+              VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $result = queryStatement($dbc, $query, "issssbs",
         $data['fk_itinerary_has_assigned'],
-        $data['fk_before'],
-        $data['fk_after'],
         $data['method'],
         $data['booking_ref'],
         $data['link'],
@@ -108,7 +85,8 @@ function createItineraryTransit($data)
     if ($result) {
         return ['message' => 'Itinerary Transit successfully created'];
     } else {
-        return ['message' => 'Error occurred during itinerary transit creation', 'db_error' => mysqli_error($dbc)]; // Include db error for debugging
+        return ['message' => 'Error occurred during itinerary transit creation', 'db_error' => mysqli_error($dbc)];
     }
 }
+
 ?>
