@@ -1,72 +1,149 @@
 <?php
 require_once(__DIR__ . '/../database/db_functions.php');
 
-function getAllItineraries($user_id)
-{
+function readAccount($filter = []) {
     $dbc = dbConnect();
-    $query = "SELECT * FROM Itinerary WHERE fk_user_created = ?";
-    $result = queryStatement($dbc, $query, "i", $user_id);
+    $query = "SELECT pk_user, email_address, username FROM User";
+    $params = [];
+    $types = "";
 
-    if ($result) {
-        $itineraries = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        return ['message' => 'Itineraries retrieved successfully', 'data' => $itineraries];
-    } else {
-        return ['message' => 'Error occurred while retrieving itineraries', 'db_error' => mysqli_error($dbc)];
+    if (isset($filter['pk_user'])) {
+        $query .= " WHERE pk_user = ?";
+        $params[] = $filter['pk_user'];
+        $types .= "i";
+    } 
+    elseif (isset($filter['email_address'])) {
+        $query .= " WHERE email_address = ?";
+        $params[] = $filter['email_address'];
+        $types .= "s";
     }
+
+    $result = queryStatement($dbc, $query, $types, ...$params);
+
+    if (!$result) {
+        return ['error' => 'Account read failed: ' . mysqli_error($dbc)];
+    }
+
+    return fetchAllFields($result);
 }
 
-function getItineraryById($itinerary_id)
-{
+function readItinerary($filter = []) {
     $dbc = dbConnect();
-    $query = "SELECT * FROM Itinerary WHERE pk_itinerary = ?";
-    $stmt = mysqli_prepare($dbc, $query);
-    mysqli_stmt_bind_param($stmt, "i", $itinerary_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $query = "SELECT pk_itinerary, creation_date, fk_user_created FROM Itinerary";
+    $params = [];
+    $types = "";
 
-    if (mysqli_num_rows($result) > 0) {
-        $itinerary = mysqli_fetch_assoc($result);
-        return ['message' => 'Itinerary retrieved successfully', 'data' => $itinerary];
-    } else {
-        return ['message' => 'Itinerary not found', 'db_error' => mysqli_error($dbc)];
+    if (isset($filter['pk_itinerary'])) {
+        $query .= " WHERE pk_itinerary = ?";
+        $params[] = $filter['pk_itinerary'];
+        $types .= "i";
     }
+    elseif (isset($filter['fk_user_created'])) {
+        $query .= " WHERE fk_user_created = ?";
+        $params[] = $filter['fk_user_created'];
+        $types .= "i";
+    }
+
+    $result = queryStatement($dbc, $query, $types, ...$params);
+
+    if (!$result) {
+        return ['error' => 'Itinerary read failed: ' . mysqli_error($dbc)];
+    }
+
+    return fetchAllFields($result);
 }
 
-function getAllItineraryStops($itinerary_id)
-{
+function readItineraryStop($filter = []) {
     $dbc = dbConnect();
-    $query = "SELECT * FROM Itinerary_Stop WHERE fk_itinerary_includes = ?";
-    $stmt = mysqli_prepare($dbc, $query);
-    mysqli_stmt_bind_param($stmt, "i", $itinerary_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $query = "SELECT 
+                pk_itinerary_stop, 
+                fk_itinerary_includes, 
+                type, 
+                value, 
+                booking_ref, 
+                link, 
+                online_ticket, 
+                start, 
+                stop 
+              FROM Itinerary_Stop";
+    $params = [];
+    $types = "";
 
-    if (mysqli_num_rows($result) > 0) {
-        $stops = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        return ['message' => 'Itinerary Stops retrieved successfully', 'data' => $stops];
-    } else {
-        return ['message' => 'Itinerary Stops not found', 'db_error' => mysqli_error($dbc)];
+    if (isset($filter['pk_itinerary_stop'])) {
+        $query .= " WHERE pk_itinerary_stop = ?";
+        $params[] = $filter['pk_itinerary_stop'];
+        $types .= "i";
     }
-}
+    elseif (isset($filter['fk_itinerary_includes'])) {
+        $query .= " WHERE fk_itinerary_includes = ?";
+        $params[] = $filter['fk_itinerary_includes'];
+        $types .= "i";
+    }
 
-function getItineraryTransitById($transit_id)
-{
-    $dbc = dbConnect();
-    $query = "SELECT * FROM Itinerary_Transit WHERE pk_itinerary_transit = ?";
-    $stmt = mysqli_prepare($dbc, $query);
+    $result = queryStatement($dbc, $query, $types, ...$params);
+
+    if (!$result) {
+        return ['error' => 'Itinerary stop read failed: ' . mysqli_error($dbc)];
+    }
+
+    $rows = fetchAllFields($result);
     
-    echo "Transit ID: " . $transit_id;  
-
-    mysqli_stmt_bind_param($stmt, "i", $transit_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-
-    if (mysqli_num_rows($result) > 0) {
-        $transit = mysqli_fetch_assoc($result);
-        return ['message' => 'Itinerary Transit retrieved successfully', 'data' => $transit];
-    } else {
-        return ['message' => 'Itinerary Transit not found', 'db_error' => mysqli_error($dbc)];
+    // Base64 encode BLOB data
+    foreach ($rows as &$row) {
+        if (isset($row['online_ticket'])) {
+            $row['online_ticket'] = base64_encode($row['online_ticket']);
+        }
     }
+    
+    return $rows;
 }
 
+function readItineraryTransit($filter = []) {
+    $dbc = dbConnect();
+    $query = "SELECT 
+                pk_itinerary_transit, 
+                fk_itinerary_has_assigned, 
+                method, 
+                booking_ref, 
+                link, 
+                online_ticket, 
+                start, 
+                stop 
+              FROM Itinerary_Transit";
+    $params = [];
+    $types = "";
+
+    if (isset($filter['pk_itinerary_transit'])) {
+        $query .= " WHERE pk_itinerary_transit = ?";
+        $params[] = $filter['pk_itinerary_transit'];
+        $types .= "i";
+    }
+    elseif (isset($filter['fk_itinerary_has_assigned'])) {
+        $query .= " WHERE fk_itinerary_has_assigned = ?";
+        $params[] = $filter['fk_itinerary_has_assigned'];
+        $types .= "i";
+    }
+    elseif (isset($filter['method'])) {
+        $query .= " WHERE method = ?";
+        $params[] = $filter['method'];
+        $types .= "s";
+    }
+
+    $result = queryStatement($dbc, $query, $types, ...$params);
+
+    if (!$result) {
+        return ['error' => 'Transit read failed: ' . mysqli_error($dbc)];
+    }
+
+    $rows = fetchAllFields($result);
+    
+    // Base64 encode BLOB data
+    foreach ($rows as &$row) {
+        if (isset($row['online_ticket'])) {
+            $row['online_ticket'] = base64_encode($row['online_ticket']);
+        }
+    }
+    
+    return $rows;
+}
 ?>

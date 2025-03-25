@@ -11,15 +11,14 @@ if (!isset($data['Type']) || !isset($data['Value'])) {
 switch ($data['Type']) {
     case 'Account':
         $result = createAccount($data['Value']);
-        //  {
-        //      "Type": "Account",
-        //      "Value": {
-        //          "email_address": "user@example.com",
-        //          "password": "password123",
-        //          "username": "username1"
-        //      }
-        //  }
-
+        // {
+        //     "Type": "Account",
+        //     "Value": {
+        //         "email_address": "testuser@example.com",
+        //         "password": "securePassword123",
+        //         "username": "TestUser"
+        //     }
+        // }
         break;
     case 'Itinerary':  // Changed from Iternary to Itinerary
         $result = createItinerary($data['Value']);

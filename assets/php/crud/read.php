@@ -1,48 +1,67 @@
 <?php
+require_once(__DIR__ . '/../database/db_functions.php');
 require_once(__DIR__ . '/../functions/rd_functions.php');
+
 header('Content-Type: application/json');
 
-$type = isset($_GET['Type']) ? $_GET['Type'] : '';
-$value = isset($_GET['Value']) ? $_GET['Value'] : null;
-
-if (empty($type) || empty($value)) {
-    echo json_encode(['message' => 'Invalid request: missing Type or Value']);
-    exit();
+if (!isset($data['Type'])) {
+    http_response_code(400);
+    echo json_encode(['message' => 'Invalid request: missing Type']);
+    exit;
 }
 
-switch ($type) {
+$value = isset($data['Value']) ? $data['Value'] : [];
+
+switch ($data['Type']) {
+    case 'Account':
+        $result = readAccount($value);
+        break;
+        // {
+        //     "Type": "Account",
+        //     "Value": {
+        //         "email_address": "user@example.com"
+        //     }
+        // }
     case 'Itinerary':
-        $itinerary_id = isset($value['pk_itinerary']) ? $value['pk_itinerary'] : null;
-        if ($itinerary_id) {
-            $result = getItineraryById($itinerary_id);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['message' => 'Invalid Itinerary ID']);
-        }
+        $result = readItinerary($value);
         break;
-
+        // {
+        //     "Type": "Itinerary",
+        //     "Value": {
+        //         "fk_user_created": 1
+        //     }
+        // }
     case 'Itinerary_Stop':
-        $itinerary_id = isset($value['fk_itinerary_includes']) ? $value['fk_itinerary_includes'] : null;
-        if ($itinerary_id) {
-            $result = getAllItineraryStops($itinerary_id);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['message' => 'Invalid Itinerary Stop ID']);
-        }
+        $result = readItineraryStop($value);
         break;
-
+        // {
+        //     "Type": "Itinerary_Stop",
+        //     "Value": {
+        //         "fk_itinerary_includes": 5
+        //     }
+        // }
     case 'Itinerary_Transit':
-        $transit_id = isset($value['pk_itinerary_transit']) ? $value['pk_itinerary_transit'] : null;
-        if ($transit_id) {
-            $result = getItineraryTransitById($transit_id);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['message' => 'Invalid Itinerary Transit ID']);
-        }
+        $result = readItineraryTransit($value);
         break;
-
+        // {
+        //     "Type": "Itinerary_Transit",
+        //     "Value": {
+        //         "method": "Flight"
+        //     }
+        // }
     default:
+        http_response_code(400);
         echo json_encode(['message' => 'Invalid Type']);
-        break;
+        exit;
+}
+
+if (isset($result['error'])) {
+    http_response_code(500);
+    echo json_encode(['message' => $result['error']]);
+} else {
+    echo json_encode([
+        'message' => 'Data retrieved successfully',
+        'data' => $result
+    ]);
 }
 ?>
