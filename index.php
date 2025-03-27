@@ -10,6 +10,7 @@ $page = $_GET["page"];
 ?>
 <!doctype html>
 <html lang="en">
+<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -32,4 +33,29 @@ $page = $_GET["page"];
 
 </footer>
 </body>
+=======
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Document</title>
+
+        <!-- HEADER -->
+        <link rel="stylesheet" href="css/header.css">
+
+        <!-- Suchleiste -->
+        <link rel="stylesheet" href="css/searchField.css">
+
+    </head>
+    <body>
+
+    <?php
+        include "include/header.php";
+        include "include/searchField.php";
+    ?>
+
+
+    </body>
+>>>>>>> dev_Home
 </html>
