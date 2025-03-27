@@ -10,7 +10,6 @@ $page = $_GET["page"];
 ?>
 <!doctype html>
 <html lang="en">
-<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -33,7 +32,6 @@ $page = $_GET["page"];
 
 </footer>
 </body>
-=======
     <head>
         <meta charset="UTF-8">
         <meta name="viewport"
@@ -42,10 +40,10 @@ $page = $_GET["page"];
         <title>Document</title>
 
         <!-- HEADER -->
-        <link rel="stylesheet" href="css/header.css">
+        <link rel="stylesheet" href="assets/css/header.css">
 
         <!-- Suchleiste -->
-        <link rel="stylesheet" href="css/searchField.css">
+        <link rel="stylesheet" href="assets/css/searchField.css">
 
     </head>
     <body>
@@ -57,5 +55,4 @@ $page = $_GET["page"];
 
 
     </body>
->>>>>>> dev_Home
 </html>
