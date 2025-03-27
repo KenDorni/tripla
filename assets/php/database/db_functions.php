@@ -1,14 +1,12 @@
 <?php
-/**
- * Creates a mysqli database connection.
- * @return false|mysqli|void
- */
+require_once(__DIR__ . '/db_credentials.php');
+
 function dbConnect()
 {
     $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     if (mysqli_connect_error()) {
-        die("ERROR: Cannot connect to" . DB_NAME . " ErrorCode => " . mysqli_connect_errno());
+        die("ERROR: Cannot connect to " . DB_NAME . " ErrorCode => " . mysqli_connect_errno());
     }
 
     mysqli_set_charset($dbc, 'utf8');
@@ -16,43 +14,6 @@ function dbConnect()
     return $dbc;
 }
 
-/**
- * Executes SQL-Query and protects from SQL-Injection
- * !Important don't forget to mysqli_free_result after function call
- * @param false|mysqli $dbc Database connection
- * @param string $query Query that gets executed
- * @param string $type A string that contains one or more characters which specify the types for the corresponding bind variables:
- * <table>
- *     <tr>
- *         <td>Type specification chars</td>
- *     </tr>
- * <tr>
- *     <td>Character</td>
- *     <td>Description</td>
- * </tr>
- * <tr>
- *     <td>i</td>
- *     <td>corresponding variable has type integer</td>
- * </tr>
- * <tr>
- *     <td>d</td>
- *     <td>corresponding variable has type double</td>
- * </tr>
- * <tr>
- *     <td>s</td>
- *     <td>corresponding variable has type string</td>
- * </tr>
- * <tr>
- *     <td>b</td>
- *     <td>corresponding variable is a blob and will be sent in packets</td>
- * </tr>
- * </table>
- * @param mixed &$vars parameters that are inserted into the sql query
- * @return bool|mysqli_result returns mysqli_result for successful SELECT, SHOW, DESCRIBE or EXPLAIN - true for other successful Queries and false on error
- * @throws Exception on wrong sql query
- * @throws Exception on empty data type
- * @throws Exception on statement error
- */
 function queryStatement($dbc, string $query, string $type = "", ...$vars)
 {
     try {
@@ -94,14 +55,14 @@ function queryStatement($dbc, string $query, string $type = "", ...$vars)
     }
 }
 
-
 function fetchAllFields($mysqli_result): array
 {
     $rows = [];
     if ($mysqli_result instanceof mysqli_result) {
         while ($row = $mysqli_result->fetch_assoc()) {
-            $rows[] = $row; // Add each row as an associative array
+            $rows[] = $row;
         }
     }
     return $rows;
 }
+?>
