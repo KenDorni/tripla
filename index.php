@@ -1,4 +1,11 @@
 <?php
+include "assets/php/db_functions.php";
+include "assets/php/db_credentials.php";
+include "assets/php/functions.php";
+
+$page = $_GET["page"];
+
+
 
 ?>
 <!doctype html>
@@ -11,6 +18,18 @@
     <title>Document</title>
 </head>
 <body>
+<header>
+    <?php
 
+    ?>
+</header>
+<main>
+    <?php
+    include "pages/" . $page . ".php";
+    ?>
+</main>
+<footer>
+
+</footer>
 </body>
 </html>
