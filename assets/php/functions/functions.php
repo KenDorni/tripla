@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../database/db_functions.php');
+
 /**
  * Check whether the username and password provided match
  * @param $dbc
@@ -82,9 +84,9 @@ function login($dbc, string $emailAddress, string $password): bool
             if (password_verify($password, $user['passwordHash'])) {
                 // Store user data in the session
                 $_SESSION['user'] = [
-                    'id' => $user['pk_operator'],
-                    'firstname' => $user['firstname'],
-                    'lastname' => $user['lastname'],
+                    'id' => $user['pk_user'],
+                    /*'firstname' => $user['firstname'],
+                    'lastname' => $user['lastname'],*/
                     'email' => $emailAddress,
                 ];
 
