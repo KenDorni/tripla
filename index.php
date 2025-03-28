@@ -1,13 +1,10 @@
 <?php
-include "assets/php/database/db_functions.php";
-include "assets/php/database/db_credentials.php";
-include "assets/php/functions/functions.php";
+include "assets/php/db_functions.php";
+include "assets/php/db_credentials.php";
+include "assets/php/functions.php";
 
-if (!isset($_GET["page"])){
-    $page = "searchField";
-}else{
-    $page = $_GET["page"];
-}
+$page = $_GET["page"];
+
 
 
 ?>
@@ -18,12 +15,21 @@ if (!isset($_GET["page"])){
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Trippla</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <!-- HEADER -->
+    <link rel="stylesheet" href="assets/css/header.css">
+
+    <!-- Suchleiste -->
+    <link rel="stylesheet" href="assets/css/searchField.css">
 </head>
 <body>
 <header>
     <?php
-
+    include "include/header.php";
     ?>
 </header>
 <main>
@@ -34,5 +40,3 @@ if (!isset($_GET["page"])){
 <footer>
 
 </footer>
-</body>
-</html>
