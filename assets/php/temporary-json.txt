@@ -76,7 +76,7 @@ GET:
         {
             "Type": "Itinerary",
             "Value": {
-                "pk_itinerary": 5
+                "pk_itinerary": 1
             }
         }
 
@@ -85,7 +85,7 @@ GET:
     {
         "Type": "Itinerary_Stop",
         "Value": {
-            "fk_itinerary_includes": 3
+            "fk_itinerary_includes": 1
         }
     }
 
@@ -94,7 +94,7 @@ GET:
     {
         "Type": "Itinerary_Transit",
         "Value": {
-            "fk_itinerary_has_assigned": 3,
+            "fk_itinerary_has_assigned": 1,
             "method": "flight"
         }
     }
