@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/../database/db_functions.php');
+
 /**
  * Check whether the username and password provided match
  * @param $dbc

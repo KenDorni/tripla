@@ -2,66 +2,69 @@
 require_once(__DIR__ . '/../database/db_functions.php');
 require_once(__DIR__ . '/../functions/rd_functions.php');
 
-header('Content-Type: application/json');
+$response = [
+    'success' => false,
+    'message' => '',
+    'data' => []
+];
 
-if (!isset($data['Type'])) {
-    http_response_code(400);
-    echo json_encode(['message' => 'Invalid request: missing Type']);
-    exit;
+try {
+    $isLoggedIn = isset($_SESSION['user_id']);
+    $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
+
+    switch ($data['Type']) {
+        case 'Account':
+            $result = getAccount($data['Value'], $userId);
+            break;
+        case 'Itinerary':
+            $result = getItinerary($data['Value'], $userId, $isLoggedIn);
+            break;
+        case 'Itinerary_Stop':
+            $result = getItineraryStop($data['Value'], $userId, $isLoggedIn);
+            break;
+        case 'Itinerary_Transit':
+            $result = getItineraryTransit($data['Value'], $userId, $isLoggedIn);
+            break;
+        default:
+            throw new Exception("Invalid Type");
+    }
+
+    if (isset($result['success'])) {
+        $response = array_merge($response, $result);
+    } else {
+        $response['success'] = true;
+        $response['message'] = "Data retrieved successfully";
+        $response['data'] = $result;
+    }
+
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
 }
 
-$value = isset($data['Value']) ? $data['Value'] : [];
-
-switch ($data['Type']) {
-    case 'Account':
-        $result = readAccount($value);
-        break;
-        // {
-        //     "Type": "Account",
-        //     "Value": {
-        //         "email_address": "user@example.com"
-        //     }
-        // }
-    case 'Itinerary':
-        $result = readItinerary($value);
-        break;
-        // {
-        //     "Type": "Itinerary",
-        //     "Value": {
-        //         "fk_user_created": 1
-        //     }
-        // }
-    case 'Itinerary_Stop':
-        $result = readItineraryStop($value);
-        break;
-        // {
-        //     "Type": "Itinerary_Stop",
-        //     "Value": {
-        //         "fk_itinerary_includes": 5
-        //     }
-        // }
-    case 'Itinerary_Transit':
-        $result = readItineraryTransit($value);
-        break;
-        // {
-        //     "Type": "Itinerary_Transit",
-        //     "Value": {
-        //         "method": "Flight"
-        //     }
-        // }
-    default:
-        http_response_code(400);
-        echo json_encode(['message' => 'Invalid Type']);
-        exit;
+// If not logged in, check cookies for data
+if (!$isLoggedIn && $data['Type'] !== 'Account') {
+    $cookieData = isset($_COOKIE['tripla_data']) ? json_decode($_COOKIE['tripla_data'], true) : [];
+    
+    if (isset($cookieData[$data['Type']])) {
+        $filteredData = filterCookieData($cookieData[$data['Type']], $data['Value']);
+        if (!empty($filteredData)) {
+            $response['data'] = array_merge($response['data'], $filteredData);
+            $response['message'] = "Combined database and cookie data";
+        }
+    }
 }
 
-if (isset($result['error'])) {
-    http_response_code(500);
-    echo json_encode(['message' => $result['error']]);
-} else {
-    echo json_encode([
-        'message' => 'Data retrieved successfully',
-        'data' => $result
-    ]);
+echo json_encode($response);
+exit();
+
+function filterCookieData($cookieItems, $filterCriteria) {
+    return array_filter($cookieItems, function($item) use ($filterCriteria) {
+        foreach ($filterCriteria as $key => $value) {
+            if (isset($item[$key]) && $item[$key] != $value) {
+                return false;
+            }
+        }
+        return true;
+    });
 }
 ?>

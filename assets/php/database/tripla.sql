@@ -22,8 +22,8 @@ CREATE TABLE tripla.Itinerary (
     FOREIGN KEY (fk_user_created) REFERENCES User (pk_user) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE tripla.itinerary_stop (
-    pk_itinerary_stop INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE tripla.Itinerary_Stop (
+    pk_Itinerary_Stop INT AUTO_INCREMENT PRIMARY KEY,
     fk_itinerary_includes INT NOT NULL,
     type VARCHAR(255) NOT NULL,
     value VARCHAR(255) NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE tripla.Itinerary_Transit (
     method VARCHAR(64) NOT NULL,
     booking_ref VARCHAR(32) NOT NULL,
     link VARCHAR(2048) NOT NULL,
-    online_ticket VARCHAR(12) NOT NULL,
+    online_ticket BLOB,
     start DATETIME NOT NULL,
     stop DATETIME NOT NULL,
     fk_itinerary_has_assigned INT NOT NULL,
