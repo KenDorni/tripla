@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/db_credentials.php');
+//require_once(__DIR__ . '/db_credentials.php');
 
 function dbConnect()
 {

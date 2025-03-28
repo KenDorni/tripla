@@ -84,9 +84,9 @@ function login($dbc, string $emailAddress, string $password): bool
             if (password_verify($password, $user['passwordHash'])) {
                 // Store user data in the session
                 $_SESSION['user'] = [
-                    'id' => $user['pk_operator'],
-                    'firstname' => $user['firstname'],
-                    'lastname' => $user['lastname'],
+                    'id' => $user['pk_user'],
+                    /*'firstname' => $user['firstname'],
+                    'lastname' => $user['lastname'],*/
                     'email' => $emailAddress,
                 ];
 
