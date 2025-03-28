@@ -1,10 +1,13 @@
 <?php
-include "assets/php/db_functions.php";
-include "assets/php/db_credentials.php";
-include "assets/php/functions.php";
+include "assets/php/database/db_functions.php";
+include "assets/php/database/db_credentials.php";
+include "assets/php/functions/functions.php";
 
-$page = $_GET["page"];
-
+if (!isset($_GET["page"])){
+    $page = "searchField";
+}else{
+    $page = $_GET["page"];
+}
 
 
 ?>
@@ -15,7 +18,7 @@ $page = $_GET["page"];
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Trippla</title>
 </head>
 <body>
 <header>
@@ -25,34 +28,11 @@ $page = $_GET["page"];
 </header>
 <main>
     <?php
-    include "pages/" . $page . ".php";
+    include "include/pages/" . $page . ".php";
     ?>
 </main>
 <footer>
 
 </footer>
 </body>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport"
-              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Document</title>
-
-        <!-- HEADER -->
-        <link rel="stylesheet" href="assets/css/header.css">
-
-        <!-- Suchleiste -->
-        <link rel="stylesheet" href="assets/css/searchField.css">
-
-    </head>
-    <body>
-
-    <?php
-        include "include/header.php";
-        include "include/searchField.php";
-    ?>
-
-
-    </body>
 </html>

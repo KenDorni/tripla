@@ -1,0 +1,181 @@
+POST:
+
+    Account:
+
+    {
+        "Type": "Account",
+        "Value": {
+            "email_address": "user@example.com",
+            "password": "securepassword123",
+            "username": "traveler1"
+        }
+    }
+
+    Itinerary:
+
+    {
+        "Type": "Itinerary",
+        "Value": {
+            "fk_user_created": 1
+        }
+    }
+
+    Itinerary Stop:
+
+    {
+        "Type": "Itinerary_Stop",
+        "Value": {
+            "fk_itinerary_includes": 1,
+            "type": "hotel",
+            "value": "Grand Hotel",
+            "booking_ref": "HOTEL12345",
+            "link": "https://example.com/booking/HOTEL12345",
+            "start": "2023-12-15 14:00:00",
+            "stop": "2023-12-20 11:00:00"
+        }
+    }
+
+    Itinerary Transit:
+
+    {
+        "Type": "Itinerary_Transit",
+        "Value": {
+            "fk_itinerary_has_assigned": 1,
+            "method": "flight",
+            "booking_ref": "FLIGHT67890",
+            "link": "https://example.com/flights/FLIGHT67890",
+            "start": "2023-12-15 10:00:00",
+            "stop": "2023-12-15 12:30:00"
+        }
+    }
+
+GET:
+
+    Account:
+
+    {
+        "Type": "Account",
+        "Value": {
+            "pk_user": 1
+        }
+    }
+
+    Itinerary:
+
+        All from specific user:
+
+        {
+            "Type": "Itinerary",
+            "Value": {
+                "fk_user_created": 1
+            }
+        }
+
+        Specific one:
+
+        {
+            "Type": "Itinerary",
+            "Value": {
+                "pk_itinerary": 1
+            }
+        }
+
+    Itinerary Stop:
+
+    {
+        "Type": "Itinerary_Stop",
+        "Value": {
+            "fk_itinerary_includes": 1
+        }
+    }
+
+    Itinerary Transit:
+
+    {
+        "Type": "Itinerary_Transit",
+        "Value": {
+            "fk_itinerary_has_assigned": 1,
+            "method": "flight"
+        }
+    }
+
+UPDATE:
+
+    Account:
+
+        Username:
+        {
+            "Type": "Account",
+            "Value": {
+                "pk_user": 1,
+                "username": "new_username"
+            }
+        }
+
+        Password:
+        {
+            "Type": "Account",
+            "Value": {
+                "pk_user": 1,
+                "password": "new_secure_password"
+            }
+        }
+
+    Itinerary Stop:
+
+    {
+        "Type": "Itinerary_Stop",
+        "Value": {
+            "pk_Itinerary_Stop": 1,
+            "start": "2023-12-16 15:00:00",
+            "stop": "2023-12-20 10:00:00"
+        }
+    }
+
+    Itinerary Transit:
+
+    {
+        "Type": "Itinerary_Transit",
+        "Value": {
+            "pk_itinerary_transit": 1,
+            "booking_ref": "UPDATED-REF-123"
+        }
+    }
+
+DELETE:
+
+    Account:
+
+    {
+        "Type": "Account",
+        "Value": {
+            "pk_user": 1
+        }
+    }
+
+    Itinerary:
+
+    {
+        "Type": "Itinerary",
+        "Value": {
+            "pk_itinerary": 1
+        }
+    }
+
+    Itinerary Stop:
+
+    {
+        "Type": "Itinerary_Stop",
+        "Value": {
+            "pk_Itinerary_Stop": 1
+        }
+    }
+
+    Itinerary Transit:
+
+    {
+        "Type": "Itinerary_Transit",
+        "Value": {
+            "pk_itinerary_transit": 1
+        }
+    }

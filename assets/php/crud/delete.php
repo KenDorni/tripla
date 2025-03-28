@@ -1,64 +1,84 @@
 <?php
-// php/crud/delete.php
+require_once(__DIR__ . '/../database/db_functions.php');
 require_once(__DIR__ . '/../functions/dt_functions.php');
 
-if (!isset($data['Type']) || !isset($data['Value'])) {
-    $responseMessages[] = ["message" => "Invalid payload: missing Type or Value"];
-    echo json_encode($responseMessages);
-    exit;
+$response = [
+    'success' => false,
+    'message' => '',
+    'data' => []
+];
+
+try {
+    $isLoggedIn = isset($_SESSION['user_id']);
+    $userId = $isLoggedIn ? $_SESSION['user_id'] : null;
+
+    switch ($data['Type']) {
+        case 'Account':
+            $result = deleteAccount($data['Value'], $userId);
+            break;
+        case 'Itinerary':
+            $result = deleteItinerary($data['Value'], $userId, $isLoggedIn);
+            break;
+        case 'Itinerary_Stop':
+            $result = deleteItineraryStop($data['Value'], $userId, $isLoggedIn);
+            break;
+        case 'Itinerary_Transit':
+            $result = deleteItineraryTransit($data['Value'], $userId, $isLoggedIn);
+            break;
+        default:
+            throw new Exception("Invalid Type");
+    }
+
+    if (isset($result['success'])) {
+        $response = array_merge($response, $result);
+    } else {
+        $response['success'] = true;
+        $response['message'] = "Deletion successful";
+        $response['data'] = $result;
+    }
+
+} catch (Exception $e) {
+    $response['message'] = $e->getMessage();
 }
 
-switch ($data['Type']) {
-    case 'Account':
-        $result = deleteAccount($data['Value']);
-        //  {
-        //      "Type": "Account",
-        //      "Value": {
-        //          "pk_user": 1 // Required for delete
-        //      }
-        //  }
-        break;
-    case 'Itinerary':
-        $result = deleteItinerary($data['Value']);
-        //  {
-        //      "Type": "Itinerary",
-        //      "Value": {
-        //          "pk_itinerary": 1 // Required for delete
-        //      }
-        //  }
-        break;
-    case 'Itinerary_Stop':
-        $result = deleteItineraryStop($data['Value']);
-        //  {
-        //      "Type": "Itinerary_Stop",
-        //      "Value": {
-        //          "pk_itinerary_stop": 1 // Required for delete
-        //      }
-        //  }
-        break;
-    case 'Itinerary_Transit':
-        $result = deleteItineraryTransit($data['Value']);
-        //  {
-        //      "Type": "Itinerary_Transit",
-        //      "Value": {
-        //          "pk_itinerary_transit": 1 // Required for delete
-        //      }
-        //  }
-        break;
-    default:
-        $responseMessages[] = ["message" => "Invalid Type"];
-        echo json_encode($responseMessages);
-        exit;
+// Handle cookie deletions for guests
+if (!$isLoggedIn && $data['Type'] !== 'Account') {
+    $cookieData = isset($_COOKIE['tripla_data']) ? json_decode($_COOKIE['tripla_data'], true) : [];
+    
+    if (isset($cookieData[$data['Type']])) {
+        $initialCount = count($cookieData[$data['Type']]);
+        $cookieData[$data['Type']] = array_filter(
+            $cookieData[$data['Type']], 
+            function($item) use ($data) {
+                return !matchesCookieItem($item, $data['Value']);
+            }
+        );
+        
+        if (count($cookieData[$data['Type']]) < $initialCount) {
+            setcookie('tripla_data', json_encode($cookieData), time() + (86400 * 30), "/");
+            $response['message'] = ($response['message'] ?? '') . " (Removed from cookies)";
+            $response['success'] = true;
+        }
+    }
 }
 
-if ($result && is_array($result) && isset($result['message'])) {
-    $responseMessages[] = $result;
-} elseif ($result) {
-    $responseMessages[] = ["message" => "Deletion successful"];
-} else {
-    $responseMessages[] = ["message" => "Error occurred during deletion"];
-}
+echo json_encode($response);
+exit();
 
-echo json_encode($responseMessages);
-exit;
+function matchesCookieItem($cookieItem, $deleteData) {
+    $idFields = [
+        'Itinerary' => 'pk_itinerary',
+        'Itinerary_Stop' => 'pk_Itinerary_Stop',
+        'Itinerary_Transit' => 'pk_itinerary_transit'
+    ];
+    
+    $type = $deleteData['Type'] ?? '';
+    if (isset($idFields[$type])) {
+        return isset($deleteData[$idFields[$type]]) && 
+               isset($cookieItem[$idFields[$type]]) && 
+               $cookieItem[$idFields[$type]] === $deleteData[$idFields[$type]];
+    }
+    
+    return false;
+}
 ?>
