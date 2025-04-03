@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Reviews</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .review-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px auto;
+            width: 50%;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Search for Place Reviews</h2>
+    <input type="text" id="place" placeholder="Enter a famous place (e.g., Eiffel Tower)">
+    <button onclick="fetchReviews()">Get Reviews</button>
+
+    <div id="reviews"></div>
+
+    <script>
+        function fetchReviews() {
+            let place = $("#place").val();
+            if (place.trim() === "") {
+                alert("Please enter a place name!");
+                return;
+            }
+
+            $("#reviews").html("<p>Loading reviews...</p>");
+
+            $.ajax({
+                url: "fetch_reviews.php",
+                type: "POST",
+                data: { place_name: place },
+                dataType: "json", // Ensures automatic JSON parsing
+                success: function (data) {
+                    console.log(data); // Log the response
+
+                    if (data.status === "success") {
+                        let reviewsHtml = "";
+                        data.reviews.forEach(review => {
+                            reviewsHtml += `<div class="review-box">
+                    <strong>${review.author}</strong> - <em>${review.rating}⭐</em>
+                    <p>${review.text}</p>
+                </div>`;
+                        });
+                        $("#reviews").html(reviewsHtml);
+                    } else {
+                        $("#reviews").html(`<p>${data.message}</p>`);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    $("#reviews").html("<p>Failed to fetch reviews.</p>");
+                }
+            });
+
+
+        }
+    </script>
+
+</body>
+
+</html>
