@@ -1,7 +1,7 @@
 <?php
-include "assets/php/db_functions.php";
-include "assets/php/db_credentials.php";
-include "assets/php/functions.php";
+include "assets/php/database/db_functions.php";
+include "assets/php/database/db_credentials.php";
+include "assets/php/functions/functions.php";
 
 session_start();
 
@@ -11,12 +11,13 @@ if (isset($_POST["logout"])) {
     header("Location: index.php");
 }
 
-$page = $_GET["page"];
 
 
-
-
-
+if (!isset($_GET["page"])){
+    $page = "welcome";
+}else{
+    $page = $_GET["page"];
+}
 
 if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
     // last request was more than 30 minutes ago
