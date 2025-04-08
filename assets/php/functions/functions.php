@@ -11,7 +11,7 @@ require_once(__DIR__ . '/../database/db_functions.php');
  */
 function verifyUser($dbc, $user, $pw): bool
 {
-    $query = "SELECT emailAddress, passwordHash FROM Operator WHERE emailAddress = ? ";
+    $query = "SELECT email_address, password FROM Operator WHERE email_address = ? ";
     $result = queryStatement($dbc, $query, "s", $user);
 
     $row = mysqli_fetch_assoc($result);
@@ -29,7 +29,7 @@ function verifyUser($dbc, $user, $pw): bool
  */
 function userExists($dbc, $user): bool
 {
-    $result = queryStatement($dbc, "SELECT emailAddress FROM Operator WHERE emailAddress = ?", "s", $user);
+    $result = queryStatement($dbc, "SELECT email_address FROM Operator WHERE email_address = ?", "s", $user);
 
     $row = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
@@ -73,7 +73,7 @@ function login($dbc, string $emailAddress, string $password): bool
     }
 
     // Query to find the user by email
-    $query = "SELECT pk_operator, firstname, lastname, passwordHash FROM Operator WHERE emailAddress = ?";
+    $query = "SELECT pk_user, email_address, username, password FROM Operator WHERE email_address = ?";
     try {
         $result = queryStatement($dbc, $query, "s", $emailAddress);
         if ($result && mysqli_num_rows($result) === 1) {
@@ -85,9 +85,8 @@ function login($dbc, string $emailAddress, string $password): bool
                 // Store user data in the session
                 $_SESSION['user'] = [
                     'id' => $user['pk_user'],
-                    /*'firstname' => $user['firstname'],
-                    'lastname' => $user['lastname'],*/
                     'email' => $emailAddress,
+                    'username' => $user["username"]
                 ];
 
                 return true;

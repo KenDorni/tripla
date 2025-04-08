@@ -12,10 +12,9 @@ if (isset($_POST["logout"])) {
 }
 
 
-
-if (!isset($_GET["page"])){
+if (!isset($_GET["page"])) {
     $page = "welcome";
-}else{
+} else {
     $page = $_GET["page"];
 }
 
@@ -35,6 +34,37 @@ if (!isset($_SESSION['CREATED'])) {
     $_SESSION['CREATED'] = time();  // update creation time
 }
 
+$dbc = dbConnect();
+
+// Handle the login form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["login"])) {
+    $emailAddress = $_POST['emailAddress'] ?? '';
+    $password = $_POST['password'] ?? '';
+
+    if (!empty($emailAddress) && !empty($password)) {
+        if (login($dbc, $emailAddress, $password)) {
+            $page = "welcome";
+        } else {
+            $message = "Login failed. Please check your credentials.";
+        }
+    } else {
+        $message = "Please fill in all fields.";
+    }
+}
+
+if (isset($_SESSION["OTP"])){
+    $page = "verification";
+
+    if ($_SESSION["OTP"] == $_POST["OTP"]){
+        register($dbc, $_POST["emailAddress"], password_hash($_POST["pw"], PASSWORD_DEFAULT), $_POST["username"]);
+        session_unset();
+
+        login($dbc, $_POST["emailAddress"], $_POST["pw"]);
+    }
+}
+
+mysqli_close($dbc);
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -44,12 +74,13 @@ if (!isset($_SESSION['CREATED'])) {
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-
+    <link rel="icon" href="assets/images/icon/tripla-icon.png">
     <!-- HEADER -->
     <link rel="stylesheet" href="assets/css/header.css">
 
     <!-- Suchleiste -->
     <link rel="stylesheet" href="assets/css/searchField.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 <header>
