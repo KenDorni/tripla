@@ -52,16 +52,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["login"])) {
     }
 }
 
+
+if (isset($_POST["emailAddress"]) && isset($_POST["username"]) && isset($_POST["pw"]) && isset($_POST["pw-confirm"]) && isset($_POST["register"]) ){
+    if ($_POST["pw"] == $_POST["pw-confirm"]){
+        send_verification_mail($_POST["emailAddress"]);
+    }else{
+        $message = "Passwords don't match";
+    }
+}else{
+    $message = "Please fill out all the fields";
+}
+
+
 if (isset($_SESSION["OTP"])){
     $page = "verification";
 
-    if ($_SESSION["OTP"] == $_POST["OTP"]){
-        register($dbc, $_POST["emailAddress"], password_hash($_POST["pw"], PASSWORD_DEFAULT), $_POST["username"]);
-        session_unset();
+    if (isset($_POST["chars"])){
+        echo "<pre>" . print_r(implode($_POST["chars"]), true) . "</pre>";
+        if ($_SESSION["OTP"] == implode($_POST["chars"])){
+            register($dbc, $_POST["emailAddress"], password_hash($_POST["pw"], PASSWORD_DEFAULT), $_POST["username"]);
+            //session_unset();
 
-        login($dbc, $_POST["emailAddress"], $_POST["pw"]);
+            login($dbc, $_POST["emailAddress"], $_POST["pw"]);
+        }
     }
 }
+
+echo "<pre>" . print_r($_SESSION, true) . "</pre>";
 
 mysqli_close($dbc);
 

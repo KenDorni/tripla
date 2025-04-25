@@ -1,47 +1,51 @@
 <?php
 if (isset($_SESSION["OTP"])) {
-    ?><style>
-        .def-txt-input {text-align: center;}
+    ?>
+    <style>
+        .def-txt-input {
+            text-align: center;
+        }
     </style>
-    <fieldset>
-        <label>
-            OTP
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[1]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[2]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[3]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[4]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
-        </label>
-    </fieldset>
+    <form method="post">
+        <fieldset>
+            <label>
+                OTP
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[1]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[2]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[3]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[4]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
+            </label>
+        </fieldset>
+    </form>
     <script>
         let $inputs = $(".def-txt-input");
         let intRegex = /^\d+$/;
 
         // Prevents user from manually entering non-digits.
-        $inputs.on("input.fromManual", function(){
-            if(!intRegex.test($(this).val())){
+        $inputs.on("input.fromManual", function () {
+            if (!intRegex.test($(this).val())) {
                 $(this).val("");
             }
         });
 
 
         // Prevents pasting non-digits and if value is 6 characters long will parse each character into an individual box.
-        $inputs.on("paste", function() {
+        $inputs.on("paste", function () {
             let $this = $(this);
             let originalValue = $this.val();
 
             $this.val("");
 
-            $this.one("input.fromPaste", function(){
+            $this.one("input.fromPaste", function () {
                 let $currentInputBox = $(this);
 
                 let pastedValue = $currentInputBox.val();
 
                 if (pastedValue.length === 6 && intRegex.test(pastedValue)) {
                     pasteValues(pastedValue);
-                }
-                else {
+                } else {
                     $this.val(originalValue);
                 }
 
@@ -56,14 +60,16 @@ if (isset($_SESSION["OTP"])) {
         function pasteValues(element) {
             let values = element.split("");
 
-            $(values).each(function(index) {
+            $(values).each(function (index) {
                 let $inputBox = $('.def-txt-input[name="chars[' + (index + 1) + ']"]');
                 $inputBox.val(values[index])
-            });
-        };
+            }).after(
+                $("form").submit()
+            );
+        }
     </script>
     <?php
-}else{
+} else {
     echo "<h1>Hippity Hoppity get off my property</h1><br><pre style='white-space: pre;
     font-family: monospace;
     font-size: 12px;
