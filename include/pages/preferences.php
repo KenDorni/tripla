@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="styles/preferences.css">
+<link rel="stylesheet" href="../../assets/css/preferences.css">
 
 <div class="container">
     <h1>Preferences</h1>
@@ -70,7 +70,7 @@
     // Function to parse the CSV file and populate the country dropdown
     async function parseCSV() {
         try {
-            const response = await fetch('includes/countries.csv');
+            const response = await fetch('countries.csv');
             const csvText = await response.text();
             const rows = csvText.split('\n').slice(1); // Skip the header row
 
