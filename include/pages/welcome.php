@@ -10,8 +10,3 @@
         <input type="text" id="who" class="search-input" placeholder="Who?">
     </div>
 </div>
-<banner>
-    <recommendations>
-        <div></div>
-    </recommendations>
-</banner>
