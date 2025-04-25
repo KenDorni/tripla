@@ -1,12 +1,12 @@
 <!-- Header -->
 <header>
-    <div class="logo">Tripla</div>
+    <a href="index.php"><div class="logo">Tripla</div></a>
     <nav>
         <ul class="nav-links">
             <li><a href="#" id="">Button1</a></li>
             <li><a href="#" id="">Button2</a></li>
-            <li><a href="#" id="">Button3</a></li>
-            <li><a> Profile Pic/Login</a></li>
+            <li><a href="?page=recommendations">Recommended</a></li>
+            <li><a href="?page=account"> Profile Pic/Login</a></li>
         </ul>
     </nav>
 </header>

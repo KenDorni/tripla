@@ -11,6 +11,7 @@ CREATE TABLE tripla.User (
     email_address VARCHAR(64) NOT NULL UNIQUE,
     password VARCHAR(256) NOT NULL,
     username VARCHAR(64),
+    verified BOOLEAN default FALSE,
     PRIMARY KEY (pk_user)
 );
 
