@@ -94,7 +94,10 @@ mysqli_close($dbc);
     <link rel="icon" href="assets/images/icon/tripla-icon.png">
     <!-- HEADER -->
     <link rel="stylesheet" href="assets/css/header.css">
-
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+    <link href="//code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+    <script src="//code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
     <!-- Suchleiste -->
     <link rel="stylesheet" href="assets/css/searchField.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
