@@ -100,7 +100,8 @@ mysqli_close($dbc);
     <script src="//code.jquery.com/ui/1.9.2/jquery-ui.min.js"></script>
     <!-- Suchleiste -->
     <link rel="stylesheet" href="assets/css/searchField.css">
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="assets/css/preferences.css">
+    <!--<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
 </head>
 <body>
 <header>
