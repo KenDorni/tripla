@@ -1,4 +1,10 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'assets/php/phpmailer/src/Exception.php';
+require 'assets/php/phpmailer/src/PHPMailer.php';
+require 'assets/php/phpmailer/src/SMTP.php';
 
 require_once(__DIR__ . '/../database/db_functions.php');
 
@@ -178,14 +184,42 @@ function copyToClipboard() {
 </script>
 </body>";
 
-    $headers = [
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();                        // Set mailer to use SMTP
+        $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server
+        $mail->SMTPAuth   = true;               // Enable SMTP authentication
+        $mail->Username   = 'tripla.welcome@gmail.com';   // SMTP username
+        $mail->Password   = 'Aaa123456+-';    // SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;    // Use 'tls' for Port 587 or 'ssl' for 465
+        $mail->Port       = 465;              // TCP port to connect to
+
+        // Recipients
+        $mail->setFrom('tripla.welcome@gmail.com', 'Tripla');
+        $mail->addAddress($receiver, 'Recipient Name'); // Add a recipient
+
+        // Content
+        $mail->isHTML(true);                    // Set email format to HTML
+        $mail->Subject = 'Welcome to Tripla - Account verification';
+        $mail->Body    = $message;
+        //$mail->AltBody = 'This is a test email sent using PHPMailer (plain text).';
+
+        $mail->send();
+        echo 'Message has been sent successfully';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+
+    /*$headers = [
         'From' => 'Tripla <no-reply@tripla.local>',
         'Reply-To' => "support@tripla.local",
         'MIME-Version' => "1.0",
         'Content-Type' => "text/html; charset=UTF-8",
         'X-Mailer' => 'PHP/' . phpversion()];
-
-    mail($receiver, "Tripla account verification", $message, $headers);
+*/
+    //mail($receiver, "Tripla account verification", $message, $headers);
 }
 
 function generateSimpleTable($result)
