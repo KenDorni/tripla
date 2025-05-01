@@ -79,7 +79,7 @@ function login($dbc, string $emailAddress, string $password): bool
     }
 
     // Query to find the user by email
-    $query = "SELECT pk_user, email_address, username, password FROM Operator WHERE email_address = ?";
+    $query = "SELECT pk_user, email_address, username, password FROM user WHERE email_address = ?";
     try {
         $result = queryStatement($dbc, $query, "s", $emailAddress);
         if ($result && mysqli_num_rows($result) === 1) {
@@ -87,7 +87,7 @@ function login($dbc, string $emailAddress, string $password): bool
             mysqli_free_result($result);
 
             // Verify the password
-            if (password_verify($password, $user['passwordHash'])) {
+            if (password_verify($password, $user['password'])) {
                 // Store user data in the session
                 $_SESSION['user'] = [
                     'id' => $user['pk_user'],
@@ -97,11 +97,11 @@ function login($dbc, string $emailAddress, string $password): bool
 
                 return true;
             } else {
-                //echo "Invalid password.";
+                echo "Invalid password.";
                 return false;
             }
         } else {
-            //echo "User not found.";
+            echo "User not found.";
             return false;
         }
     } catch (Exception $e) {
@@ -117,14 +117,15 @@ function register($dbc, $emailAddress, $pw, $username)
     //confirmation message
     $message = "Thank you for signing up to Tripla";
 
-    $headers = [
+    /*$headers = [
         'From' => 'Tripla <no-reply@tripla.local>',
         'Reply-To' => "support@tripla.local",
         'MIME-Version' => "1.0",
         'Content-Type' => "text/html; charset=UTF-8",
-        'X-Mailer' => 'PHP/' . phpversion()];
+        'X-Mailer' => 'PHP/' . phpversion()];*/
 
-    mail($emailAddress, "Tripla account verified", $message, $headers);
+    //mail($emailAddress, "Tripla account verified", $message, $headers);
+    send_mail($emailAddress, $message);
 }
 
 function send_verification_mail(string $receiver)
@@ -150,7 +151,8 @@ function send_verification_mail(string $receiver)
       <!-- OTP Box -->
       <div style='margin: 2rem 0; text-align: center;'>
         <div style='display: inline-block; background-color: #e0e7ff; color: #1e40af; padding: 1.5rem 2rem; font-size: 28px; font-weight: bold; border-radius: 8px; letter-spacing: 6px;'>
-          <button  style='display: inline-block; background-color: inherit; color: inherit;font-size: 28px; font-weight: bold; border-radius: 8px; letter-spacing: 6px;border:none;cursor:pointer;' onclick='copyToClipboard()' id='otp' >918849</button>    
+          <button  style='display: inline-block; background-color: inherit; color: inherit;font-size: 28px; font-weight: bold; 
+          border-radius: 8px; letter-spacing: 6px;border:none;cursor:pointer;' onclick='copyToClipboard()' id='otp' >{$_SESSION['OTP']}</button>    
         </div>
       </div>
 
@@ -184,6 +186,19 @@ function copyToClipboard() {
 </script>
 </body>";
 
+    send_mail($receiver, $message);
+
+    /*$headers = [
+        'From' => 'Tripla <no-reply@tripla.local>',
+        'Reply-To' => "support@tripla.local",
+        'MIME-Version' => "1.0",
+        'Content-Type' => "text/html; charset=UTF-8",
+        'X-Mailer' => 'PHP/' . phpversion()];
+*/
+    //mail($receiver, "Tripla account verification", $message, $headers);
+}
+
+function send_mail($receiver, $message){
     $mail = new PHPMailer(true);
 
     try {
@@ -192,7 +207,7 @@ function copyToClipboard() {
         $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server
         $mail->SMTPAuth   = true;               // Enable SMTP authentication
         $mail->Username   = 'tripla.welcome@gmail.com';   // SMTP username
-        $mail->Password   = 'Aaa123456+-';    // SMTP password
+        $mail->Password   = 'hucr dray bqwm oswt';    // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;    // Use 'tls' for Port 587 or 'ssl' for 465
         $mail->Port       = 465;              // TCP port to connect to
 
@@ -211,15 +226,6 @@ function copyToClipboard() {
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
-
-    /*$headers = [
-        'From' => 'Tripla <no-reply@tripla.local>',
-        'Reply-To' => "support@tripla.local",
-        'MIME-Version' => "1.0",
-        'Content-Type' => "text/html; charset=UTF-8",
-        'X-Mailer' => 'PHP/' . phpversion()];
-*/
-    //mail($receiver, "Tripla account verification", $message, $headers);
 }
 
 function generateSimpleTable($result)

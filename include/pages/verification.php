@@ -1,5 +1,5 @@
 <?php
-if (isset($_SESSION["OTP"])) {
+if (isset($_SESSION["OTP"])) {//Aaa123456+-
     ?>
     <style>
         .def-txt-input {
@@ -17,6 +17,9 @@ if (isset($_SESSION["OTP"])) {
                 <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
                 <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
             </label>
+            <input type="hidden" name="username" value="<?php echo $_POST['username'];?>">
+            <input type="hidden" name="pw" value="<?php echo $_POST['pw'];?>">
+            <input type="hidden" name="emailAddress" value="<?php echo $_POST['emailAddress'];?>">
         </fieldset>
     </form>
     <script>

@@ -6,7 +6,7 @@
             <li><a href="#" id="">Button1</a></li>
             <li><a href="#" id="">Button2</a></li>
             <li><a href="?page=recommendations">Recommended</a></li>
-            <li><a href="?page=account"> Profile Pic/Login</a></li>
+            <li><a href="?page=account"><?php echo (isset($_SESSION["user"])? "Profile" : "Login") ?></a></li>
         </ul>
     </nav>
 </header>

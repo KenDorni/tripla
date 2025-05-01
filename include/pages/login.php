@@ -9,8 +9,10 @@
             Password:
             <input type="password" name="password">
         </label>
-        <input type="button" name="login" value="Login"><?php echo $message ?? '' ?><hr>
+        <input type="submit" name="login" value="Login"><?php echo $message ?? '' ?><hr>
         <a href="?page=register">Register</a><hr>
         <a href="?page=ForgotPW">Forgot ?</a>
     </fieldset>
 </form>
+<?php
+echo "<pre>" . print_r($_SESSION, true) . "</pre>";

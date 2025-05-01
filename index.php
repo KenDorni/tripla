@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["login"])) {
 
 if (isset($_POST["emailAddress"]) && isset($_POST["username"]) && isset($_POST["pw"]) && isset($_POST["pw-confirm"]) && isset($_POST["register"]) ){
     if ($_POST["pw"] == $_POST["pw-confirm"]){
-        send_verification_mail($_POST["emailAddress"]);
+        send_verification_mail($_POST["emailAddress"], $_POST["username"], $_POST["pw"]);
     }else{
         $message = "Passwords don't match";
     }
@@ -68,12 +68,13 @@ if (isset($_SESSION["OTP"])){
     $page = "verification";
 
     if (isset($_POST["chars"])){
-        echo "<pre>" . print_r(implode($_POST["chars"]), true) . "</pre>";
+        echo "<pre>" . print_r(implode($_POST["chars"]) . "  " . $_SESSION["OTP"], true) . "</pre>";
         if ($_SESSION["OTP"] == implode($_POST["chars"])){
-            register($dbc, $_POST["emailAddress"], password_hash($_POST["pw"], PASSWORD_DEFAULT), $_POST["username"]);
+            register($dbc, $_POST["emailAddress"], $_POST["pw"], $_POST["username"]);
             //session_unset();
 
             login($dbc, $_POST["emailAddress"], $_POST["pw"]);
+            header("Location: ?page=welcome");
         }
     }
 }
