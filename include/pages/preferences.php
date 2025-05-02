@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="../../assets/css/preferences.css">
-
 <div class="container">
     <h1>Preferences</h1>
     <!-- Dropdown for selecting the type of travel -->
@@ -71,6 +69,8 @@
     async function parseCSV() {
         try {
             const response = await fetch('./include/pages/countries.csv');
+            const response = await fetch('include/pages/countries.csv');
+            console.log(response)
             const csvText = await response.text();
             const rows = csvText.split('\n').slice(1); // Skip the header row
 

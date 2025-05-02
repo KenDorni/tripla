@@ -54,7 +54,7 @@ header .nav-links a:hover {
     background-image: url('https://www.verbraucherzentrale.de/sites/default/files/styles/vkey_desktop/public/2017-09/Strand%20Palmen%20stockphoto-graf%20Fotolia_86277577_M.jpg?h=ee6d6a99&itok=uaVgegUK'); /* Bild */
     background-size: cover;
     background-position: center;
-    height: 300px;
+    height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
