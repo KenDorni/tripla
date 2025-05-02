@@ -68,6 +68,7 @@
     // Function to parse the CSV file and populate the country dropdown
     async function parseCSV() {
         try {
+            const response = await fetch('./include/pages/countries.csv');
             const response = await fetch('include/pages/countries.csv');
             console.log(response)
             const csvText = await response.text();

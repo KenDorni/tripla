@@ -17,7 +17,7 @@ require_once(__DIR__ . '/../database/db_functions.php');
  */
 function verifyUser($dbc, $user, $pw): bool
 {
-    $query = "SELECT email_address, password FROM Operator WHERE email_address = ? ";
+    $query = "SELECT email_address, password FROM user WHERE email_address = ? ";
     $result = queryStatement($dbc, $query, "s", $user);
 
     $row = mysqli_fetch_assoc($result);
@@ -35,7 +35,7 @@ function verifyUser($dbc, $user, $pw): bool
  */
 function userExists($dbc, $user): bool
 {
-    $result = queryStatement($dbc, "SELECT email_address FROM Operator WHERE email_address = ?", "s", $user);
+    $result = queryStatement($dbc, "SELECT email_address FROM user WHERE email_address = ?", "s", $user);
 
     $row = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
@@ -186,7 +186,37 @@ function copyToClipboard() {
 </script>
 </body>";
 
+//<<<<<<< HEAD
+    $mail = new PHPMailer(true);
+
+    try {
+        // Server settings
+        $mail->isSMTP();                        // Set mailer to use SMTP
+        $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server
+        $mail->SMTPAuth   = true;               // Enable SMTP authentication
+        $mail->Username   = 'tripla.welcome@gmail.com';   // SMTP username
+        $mail->Password   = 'Aaa123456+-';    // SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;    // Use 'tls' for Port 587 or 'ssl' for 465
+        $mail->Port       = 465;              // TCP port to connect to
+
+        // Recipients
+        $mail->setFrom('tripla.welcome@gmail.com', 'Tripla');
+        $mail->addAddress($receiver, 'Recipient Name'); // Add a recipient
+
+        // Content
+        $mail->isHTML(true);                    // Set email format to HTML
+        $mail->Subject = 'Welcome to Tripla - Account verification';
+        $mail->Body    = $message;
+        //$mail->AltBody = 'This is a test email sent using PHPMailer (plain text).';
+
+        $mail->send();
+        echo 'Message has been sent successfully';
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+//=======
     send_mail($receiver, $message);
+//>>>>>>> pages2
 
     /*$headers = [
         'From' => 'Tripla <no-reply@tripla.local>',
@@ -196,6 +226,8 @@ function copyToClipboard() {
         'X-Mailer' => 'PHP/' . phpversion()];
 */
     //mail($receiver, "Tripla account verification", $message, $headers);
+//<<<<<<< HEAD
+//=======
 }
 
 function send_mail($receiver, $message){
@@ -226,6 +258,7 @@ function send_mail($receiver, $message){
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
     }
+//>>>>>>> pages2
 }
 
 function generateSimpleTable($result)
