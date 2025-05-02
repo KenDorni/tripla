@@ -45,13 +45,8 @@
             z-index: 2;
         }
 
-        .start-marker {
-            top: 0;
-        }
-
-        .end-marker {
-            bottom: 0;
-        }
+        .start-marker { top: 0; }
+        .end-marker { bottom: 0; }
 
         .entry-wrapper {
             width: 100%;
@@ -89,6 +84,7 @@
 
         input[type="text"],
         input[type="date"],
+        input[type="time"],
         select {
             padding: 10px;
             border-radius: 5px;
@@ -116,7 +112,7 @@
             width: 90%;
             margin-top: 5px;
             margin-left: auto;
-            padding-left: 75%; /* <- your preferred spacing */
+            padding-left: 75%;
         }
 
         .add-btn {
@@ -163,6 +159,15 @@
         .api-popup ul li:hover {
             background: #f7f7f7;
         }
+
+        .mode-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -172,7 +177,6 @@
     <div class="vertical-line"></div>
 
     <div id="entriesContainer">
-        <!-- Initial entry -->
         <div class="entry-wrapper">
             <div class="entry-row">
                 <div class="date-side">
@@ -181,12 +185,13 @@
                     <input type="time" name="time[]">
                 </div>
                 <div class="input-side">
-                    <div style="display: flex; gap: 10px;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
                         <select class="api-selector">
                             <option value="api1">API 1</option>
                             <option value="api2">API 2</option>
                             <option value="api3">API 3</option>
                         </select>
+                        <button class="mode-btn">🚗</button>
                         <input type="text" class="api-input" name="input[]" placeholder="Click or type to load API">
                     </div>
                 </div>
@@ -198,7 +203,6 @@
     <div class="marker end-marker">E</div>
 </div>
 
-<!-- API Popup -->
 <div class="api-popup" id="apiPopup">
     <h4>API Options</h4>
     <ul></ul>
@@ -212,6 +216,13 @@
         api3: ["Cloud", "Camera", "Coffee"]
     };
 
+    const testTravelAPI = {
+        "🚶‍♂️": 10,
+        "🚗": 25,
+        "🚌": 35,
+        "🚆": 50
+    };
+
     let currentInput = null;
 
     function showPopup(data, inputEl) {
@@ -219,39 +230,82 @@
         const list = popup.find('ul');
         list.empty();
         data.forEach(item => {
-            list.append(`<li>${item}</li>`);
+            if (typeof item === 'string') {
+                list.append(`<li>${item}</li>`);
+            } else {
+                list.append(`<li data-duration="${item.duration}">${item.label}</li>`);
+            }
         });
-        popup.show();
+        const offset = inputEl.offset();
+        popup.css({ top: offset.top + 30, left: offset.left }).show();
         currentInput = inputEl;
     }
 
     function createEntry() {
         return `
-      <div class="entry-wrapper">
-        <div class="entry-row">
-          <div class="date-side">
-            <button class="remove-btn">−</button>
-            <input type="date" name="date[]">
-          </div>
-          <div class="input-side">
-            <div style="display: flex; gap: 10px;">
-              <select class="api-selector">
-                <option value="api1">API 1</option>
-                <option value="api2">API 2</option>
-                <option value="api3">API 3</option>
-              </select>
-              <input type="text" class="api-input" name="input[]" placeholder="Click or type to load API">
+        <div class="entry-wrapper">
+            <div class="entry-row">
+                <div class="date-side">
+                    <button class="remove-btn">−</button>
+                    <input type="date" name="date[]">
+                    <input type="time" name="time[]">
+                </div>
+                <div class="input-side">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <select class="api-selector">
+                            <option value="api1">API 1</option>
+                            <option value="api2">API 2</option>
+                            <option value="api3">API 3</option>
+                        </select>
+                        <button class="mode-btn">🚗</button>
+                        <input type="text" class="api-input" name="input[]" placeholder="Click or type to load API">
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="add-btn-below"><button class="add-after add-btn">+</button></div>
-      </div>
-    `;
+            <div class="add-btn-below"><button class="add-after add-btn">+</button></div>
+        </div>`;
     }
 
     function filterOptions(apiKey, keyword) {
         const options = mockAPIs[apiKey] || [];
         return options.filter(option => option.toLowerCase().startsWith(keyword.toLowerCase()));
+    }
+
+    function updateTravelDuration(entryRow) {
+        const travelBtn = entryRow.find('.mode-btn');
+        const travelMode = travelBtn.text().trim();
+        const duration = testTravelAPI[travelMode];
+
+        if (!duration) return;
+
+        const timeInput = entryRow.find('input[type="time"]');
+        const locationInput = entryRow.find('.api-input');
+
+        if (!timeInput.val() || !locationInput.val()) return;
+
+        const [hours, minutes] = timeInput.val().split(':').map(Number);
+        const departure = new Date();
+        departure.setHours(hours);
+        departure.setMinutes(minutes);
+
+        const arrival = new Date(departure.getTime() + duration * 60000);
+        const nextRow = entryRow.closest('.entry-wrapper').next('.entry-wrapper');
+
+        if (nextRow.length) {
+            const nextTimeInput = nextRow.find('input[type="time"]');
+            if (nextTimeInput.length && nextTimeInput.val()) {
+                const [nHours, nMinutes] = nextTimeInput.val().split(':').map(Number);
+                const nextTime = new Date();
+                nextTime.setHours(nHours);
+                nextTime.setMinutes(nMinutes);
+                if (arrival > nextTime) {
+                    alert("⚠️ Zu spät! Die Ankunft überschreitet die nächste Zeit.");
+                    return;
+                }
+            }
+        }
+
+        travelBtn.text(`${travelMode} ⏱️${duration}min`);
     }
 
     $(document).ready(function () {
@@ -266,7 +320,7 @@
             if ($('#entriesContainer .entry-wrapper').length > 1) {
                 wrapper.remove();
             } else {
-                alert("You need at least one input!");
+                alert("Du brauchst mindestens ein Eingabefeld!");
             }
         });
 
@@ -277,7 +331,6 @@
             showPopup(data, $(this));
         });
 
-        // Dynamic search
         $('#entriesContainer').on('input', '.api-input', function () {
             const row = $(this).closest('.entry-row');
             const api = row.find('.api-selector').val();
@@ -286,18 +339,47 @@
             showPopup(filtered, $(this));
         });
 
-        // Click popup item -> insert into input
-        $('#apiPopup').on('click', 'li', function () {
-            const value = $(this).text();
-            if (currentInput) {
-                currentInput.val(value);
-            }
-            $('#apiPopup').hide();
+        $('#entriesContainer').on('blur', '.api-input', function () {
+            const row = $(this).closest('.entry-row');
+            updateTravelDuration(row);
         });
 
-        // Hide popup if clicked outside
+        $('#entriesContainer').on('click', '.mode-btn', function () {
+            const btn = $(this);
+            const popup = $('#apiPopup');
+            const list = popup.find('ul');
+
+            list.empty();
+            Object.entries(testTravelAPI).forEach(([mode, duration]) => {
+                list.append(`<li data-duration="${duration}">${mode}</li>`);
+            });
+
+            const offset = btn.offset();
+            popup.css({ top: offset.top + 30, left: offset.left }).show();
+            currentInput = btn;
+        });
+
+        $('#apiPopup').on('click', 'li', function () {
+            const value = $(this).text();
+            const duration = parseInt($(this).data('duration'));
+            const isTravel = !isNaN(duration);
+            const inputRow = currentInput.closest('.entry-row');
+
+            if (isTravel) {
+                currentInput.text(`${value} ⏱️${duration}min`);
+                updateTravelDuration(inputRow);
+            } else {
+                if (currentInput.is('input')) {
+                    currentInput.val(value);
+                    updateTravelDuration(inputRow);
+                }
+            }
+
+            popup.hide();
+        });
+
         $(document).on('click', function (e) {
-            if (!$(e.target).closest('.api-popup, .api-input, .api-selector').length) {
+            if (!$(e.target).closest('.api-popup, .api-input, .api-selector, .mode-btn').length) {
                 $('#apiPopup').hide();
             }
         });
