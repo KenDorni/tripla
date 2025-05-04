@@ -70,7 +70,7 @@ if (isset($_SESSION["OTP"])){
     if (isset($_POST["chars"])){
         echo "<pre>" . print_r(implode($_POST["chars"]) . "  " . $_SESSION["OTP"], true) . "</pre>";
         if ($_SESSION["OTP"] == implode($_POST["chars"])){
-            session_reset();
+            unset($_SESSION["OTP"]);
 
             register($dbc, $_POST["emailAddress"], $_POST["pw"], $_POST["username"]);
             //session_unset();
@@ -106,6 +106,7 @@ mysqli_close($dbc);
     <!-- Suchleiste -->
     <link rel="stylesheet" href="assets/css/searchField.css">
     <link rel="stylesheet" href="assets/css/preferences.css">
+    <link rel="stylesheet" href="assets/css/verification.css">
     <!--<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
 </head>
 <body>

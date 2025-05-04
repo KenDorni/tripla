@@ -18,14 +18,47 @@
 
     <!-- Input field for selecting the date -->
     <div class="form-group">
-        <label for="when">When</label>
-        <input id="datepicker" placeholder="Select Date">
+        <label for="datepicker">When</label>
+        <input type="text" id="datepicker" placeholder="Select Date">
     </div>
 
+
     <!-- Input field for specifying the number of travelers -->
-    <div class="form-group">
-        <label for="who">Who</label>
-        <input type="text" id="who" placeholder="2 Pers. 1 Child.">
+     <label for="who">Who</label>
+    <div class="dropdown-container">
+        <div class="dropdown-toggle" id="travelerToggle">3 Adults · 0 Children · 1 Room</div>
+        
+        <div class="dropdown-panel" id="travelerPanel">
+            <div class="counter-group">
+            <span class="counter-label">Adults</span>
+            <div class="counter">
+                <button onclick="updateCount('adults', -1)">−</button>
+                <span id="adultsCount">3</span>
+                <button onclick="updateCount('adults', 1)">+</button>
+            </div>
+            </div>
+
+            <div class="counter-group">
+            <span class="counter-label">Children</span>
+            <div class="counter">
+                <button onclick="updateCount('children', -1)">−</button>
+                <span id="childrenCount">0</span>
+                <button onclick="updateCount('children', 1)">+</button>
+            </div>
+            </div>
+
+            <div class="counter-group">
+            <span class="counter-label">Rooms</span>
+            <div class="counter">
+                <button onclick="updateCount('rooms', -1)">−</button>
+                <span id="roomsCount">1</span>
+                <button onclick="updateCount('rooms', 1)">+</button>
+            </div>
+            </div>
+
+            <button class="done-button" onclick="closeDropdown()">Done</button>
+            <br>
+        </div>
     </div>
 
     <!-- Budget slider -->
@@ -67,10 +100,41 @@
 </div>
 
 <script>
+    const toggle = document.getElementById('travelerToggle');
+    const panel = document.getElementById('travelerPanel');
+    const counts = {
+        adults: 3,
+        children: 0,
+        rooms: 1
+    };
+
+    function updateDisplay() {
+        document.getElementById('adultsCount').textContent = counts.adults;
+        document.getElementById('childrenCount').textContent = counts.children;
+        document.getElementById('roomsCount').textContent = counts.rooms;
+        toggle.textContent = `${counts.adults} Adults · ${counts.children} Children · ${counts.rooms} Room${counts.rooms > 1 ? 's' : ''}`;
+    }
+
+    function updateCount(type, delta) {
+        if (counts[type] + delta >= 0) {
+        counts[type] += delta;
+        updateDisplay();
+        }
+    }
+
+    toggle.addEventListener('click', () => {
+        panel.classList.toggle('active');
+    });
+
+    function closeDropdown() {
+        panel.classList.remove('active');
+    }
+
+    // Initialize display
+    updateDisplay();
     // Function to parse the CSV file and populate the country dropdown
     async function parseCSV() {
         try {
-            const response = await fetch('./include/pages/countries.csv');
             const response = await fetch('include/pages/countries.csv');
             console.log(response)
             const csvText = await response.text();
