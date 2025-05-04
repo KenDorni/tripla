@@ -70,6 +70,8 @@ if (isset($_SESSION["OTP"])){
     if (isset($_POST["chars"])){
         echo "<pre>" . print_r(implode($_POST["chars"]) . "  " . $_SESSION["OTP"], true) . "</pre>";
         if ($_SESSION["OTP"] == implode($_POST["chars"])){
+            session_reset();
+
             register($dbc, $_POST["emailAddress"], $_POST["pw"], $_POST["username"]);
             //session_unset();
 
