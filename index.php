@@ -106,6 +106,7 @@ mysqli_close($dbc);
     <!-- Suchleiste -->
     <link rel="stylesheet" href="assets/css/searchField.css">
     <link rel="stylesheet" href="assets/css/preferences.css">
+    <link rel="stylesheet" href="assets/css/verification.css">
     <!--<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
 </head>
 <body>
