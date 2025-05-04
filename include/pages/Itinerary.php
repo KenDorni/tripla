@@ -19,6 +19,7 @@
     </div>
     <div id="transitContent" style="overflow-y: auto; height: calc(100% - 50px); padding: 10px;"></div>
 </div>
+
 <script>
     let itinerary = [
         {
