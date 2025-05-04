@@ -1,201 +1,473 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f0f0f0;
-        padding: 40px;
-    }
-
-    .line-wrapper {
-        position: relative;
-        width: 100%;
+    .timeline {
         display: flex;
         flex-direction: column;
-        align-items: center;
-    }
-
-    .vertical-line {
-        position: absolute;
-        top: 30px;
-        bottom: 30px;
-        width: 2px;
-        background-color: black;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 0;
-    }
-
-    .marker {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 30px;
-        height: 30px;
-        background-color: #000;
-        color: #fff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        z-index: 2;
-    }
-
-    .start-marker {
-        top: 0;
-    }
-
-    .end-marker {
-        bottom: 0;
-    }
-
-    .entry-wrapper {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .entry-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        margin: 20px 0 10px;
+        padding: 20px 0;
+        border-left: 2px solid #999;
         position: relative;
-        z-index: 1;
+        margin-left: 40px;
     }
 
-    .date-side {
-        width: 45%;
+    .entry {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .left {
+        width: 250px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-end;
         text-align: right;
-        padding-right: 20px;
+        margin-right: 40px;
+    }
+
+    .right {
         display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .left input[type="datetime-local"] {
+        width: 180px;
+        padding: 4px;
+    }
+
+    .left .controls {
+        display: flex;
+        gap: 4px;
         justify-content: flex-end;
-        align-items: center;
-        gap: 5px;
+        margin-top: 4px;
     }
 
-    .input-side {
-        width: 45%;
-        text-align: left;
-        padding-left: 20px;
-    }
-
-    input[type="text"],
-    input[type="date"] {
-        padding: 10px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        width: 100%;
-    }
-
-    .remove-btn {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        font-size: 16px;
-        line-height: 25px;
-        text-align: center;
-        cursor: pointer;
-    }
-
-    .add-btn-below {
+    .add-section {
         display: flex;
-        justify-content: flex-start;
-        width: 90%;
-        margin-top: 5px;
-        margin-left: auto;
-        padding-left: 75%;
+        align-items: center;
+        margin: 10px 0 10px -40px;
     }
 
-    .add-btn {
-        background-color: #2ecc71;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        font-size: 18px;
-        color: white;
+    .add-section button {
+        margin-right: 290px;
+    }
+
+    .center-line {
+        position: absolute;
+        left: 250px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #999;
+        z-index: -1;
+    }
+
+    .location-search {
+        width: 250px;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+        background: white;
+        border: 2px solid #333;
+        z-index: 1000;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .overlay-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .suggestions {
+        border: 1px solid #ccc;
+        max-height: 100px;
+        overflow-y: auto;
+        background: white;
+        margin-bottom: 10px;
+    }
+
+    .suggestions div {
+        padding: 4px;
         cursor: pointer;
     }
-</style>
-</head>
-<body>
 
-<div class="line-wrapper">
-    <div class="marker start-marker">S</div>
-    <div class="vertical-line"></div>
+    .suggestions div:hover {
+        background-color: #eee;
+    }
 
-    <div id="entriesContainer">
-        <!-- One full block -->
-        <div class="entry-wrapper">
-            <div class="entry-row">
-                <div class="date-side">
-                    <button class="remove-btn">−</button>
-                    <input type="date" name="date[]">
-                </div>
-                <div class="input-side">
-                    <input type="text" name="input[]" placeholder="Type something...">
-                </div>
-            </div>
-            <div class="add-btn-below"><button class="add-after add-btn">+</button></div>
-        </div>
-    </div>
+    #map {
+        height: calc(100% - 130px);
+    }
 
-    <div class="marker end-marker">E</div>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        function createEntry() {
-            return `
-      <div class="entry-wrapper">
-        <div class="entry-row">
-          <div class="date-side">
-            <button class="remove-btn">−</button>
-            <input type="date" name="date[]">
-          </div>
-          <div class="input-side">
-
-
-
-
-            <select name=''>
-                <option value="function()"></option>
-                <option value=""></option>
-                <option value=""></option>
-            </select>
-
-
-
-
-
-            <input type="text" name="input[]" placeholder="Type something...">
-          </div>
-        </div>
-        <div class="add-btn-below"><button class="add-after add-btn">+</button></div>
-      </div>
-    `;
+    @media (max-width: 600px) {
+        .timeline {
+            margin-left: 0;
+            padding-left: 10px;
         }
 
-        // Add new entry below this one
-        $('#entriesContainer').on('click', '.add-after', function () {
-            $(this).closest('.entry-wrapper').after(createEntry());
+        .entry {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 0;
+        }
+
+        .left, .right {
+            width: 100%;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .left input[type="datetime-local"] {
+            width: 100%;
+        }
+
+        .left .controls {
+            justify-content: flex-start;
+        }
+
+        .center-line {
+            display: none;
+        }
+
+        .add-section {
+            flex-direction: row;
+            margin-left: 0;
+        }
+
+        .add-section button {
+            margin-right: 10px;
+        }
+    }
+</style>
+<div id="timeline" class="timeline"></div>
+<div id="mapModal" class="overlay">
+    <div class="overlay-header">
+        <input id="mapSearchInput" placeholder="Search location...">
+        <button onclick="closeMapModal()">Close</button>
+    </div>
+    <div id="searchSuggestions" class="suggestions"></div>
+    <div id="map"></div>
+</div>
+<div id="transitOverlay" class="overlay">
+    <div class="overlay-header">
+        <h3>Transit Options</h3>
+        <button onclick="document.getElementById('transitOverlay').style.display='none'">Close</button>
+    </div>
+    <div id="transitContent" style="overflow-y: auto; height: calc(100% - 50px); padding: 10px;"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+    let itinerary = [
+        {
+            name: "start",
+            type: "start",
+            category: "Location",
+            value: "Luxembourg",
+            startTime: "",
+            endTime: "",
+            before: null
+        },
+        {name: "transit1", type: "transit", category: "Flight", value: "", startTime: "", endTime: "", before: 1},
+        {
+            name: "end",
+            type: "stop",
+            category: "Location",
+            value: "Barcelona, Catalonia, Spain",
+            startTime: "",
+            endTime: "",
+            before: 0
+        }
+    ];
+
+    function isEditable() {
+        const start = itinerary.find(i => i.name === "start" && i.value);
+        const end = itinerary.find(i => i.name === "end" && i.value);
+        return start && end;
+    }
+
+    function addStopBefore(index) {
+        const stopId = Date.now();
+        const stop = {
+            name: `stop${stopId}`,
+            type: "stop",
+            category: "Activity",
+            value: "",
+            startTime: "",
+            endTime: "",
+            before: null
+        };
+        const transit = {
+            name: `transit${stopId}`,
+            type: "transit",
+            category: "Train",
+            value: "",
+            startTime: "",
+            endTime: "",
+            before: null
+        };
+        itinerary.splice(index, 0, transit, stop);
+        rebuildBefore();
+    }
+
+    function removeItem(name) {
+        const item = itinerary.find(i => i.name === name);
+        if (item?.type === "transit") return;
+        const idx = itinerary.findIndex(i => i.name === name);
+        const prevTransit = itinerary[idx - 1];
+        if (prevTransit?.type === "transit") itinerary.splice(idx - 1, 2);
+        else itinerary.splice(idx, 1);
+        rebuildBefore();
+    }
+
+    function rebuildBefore() {
+        const start = itinerary.find(i => i.type === "start");
+        const end = itinerary.find(i => i.name === "end");
+        const stops = itinerary.filter(i => i.type === "stop" && i.name !== "end");
+        const transits = itinerary.filter(i => i.type === "transit");
+
+        const ordered = [start];
+        for (let i = 0; i < stops.length; i++) {
+            const stop = stops[i];
+            const transit = transits.find(t => itinerary.indexOf(t) < itinerary.indexOf(stop));
+            if (transit) ordered.push(transit);
+            ordered.push(stop);
+        }
+        const lastTransit = transits.find(t => itinerary.indexOf(t) < itinerary.indexOf(end));
+        if (lastTransit) ordered.push(lastTransit);
+        ordered.push(end);
+
+        ordered.forEach((item, i) => {
+            item.before = i === 0 ? null : i - 1;
         });
 
-        // Remove entry
-        $('#entriesContainer').on('click', '.remove-btn', function () {
-            const wrapper = $(this).closest('.entry-wrapper');
-            if ($('#entriesContainer .entry-wrapper').length > 1) {
-                wrapper.remove();
-            } else {
-                alert("You need at least one input!");
+        itinerary = ordered;
+        renderItinerary();
+    }
+
+    function renderItinerary() {
+        const container = document.getElementById("timeline");
+        container.innerHTML = "";
+
+        const line = document.createElement("div");
+        line.className = "center-line";
+        container.appendChild(line);
+
+        itinerary.forEach((item, index) => {
+            if (item.type === "transit" && isEditable()) {
+                const addRow = document.createElement("div");
+                addRow.className = "add-section";
+                const btn = document.createElement("button");
+                btn.textContent = "+";
+                btn.onclick = () => addStopBefore(index + 1);
+                addRow.appendChild(btn);
+                container.appendChild(addRow);
             }
+
+            const row = document.createElement("div");
+            row.className = "entry";
+            row.dataset.name = item.name;
+
+            const left = document.createElement("div");
+            left.className = "left";
+            left.innerHTML = `
+            <input type="datetime-local" value="${item.startTime}" onchange="updateTime('${item.name}', this.value, 'startTime')">
+            <input type="datetime-local" value="${item.endTime || ''}" onchange="updateTime('${item.name}', this.value, 'endTime')">
+        `;
+
+            const controls = document.createElement("div");
+            controls.className = "controls";
+            if (item.name !== "start" && item.name !== "end" && isEditable() && item.type !== "transit") {
+                const removeBtn = document.createElement("button");
+                removeBtn.textContent = "–";
+                removeBtn.onclick = () => removeItem(item.name);
+                controls.appendChild(removeBtn);
+            }
+
+            const right = document.createElement("div");
+            right.className = "right";
+
+            /*right.innerHTML = `
+            <input class="location-search" placeholder="Click to pick location" readonly onclick="openMap('${item.name}')" value="${item.value}">
+            ${item.type !== 'transit' ? `
+            <select onchange="updateCategory('${item.name}', this.value)">
+                <option ${item.category === 'Location' ? 'selected' : ''}>Location</option>
+                <option ${item.category === 'Stay' ? 'selected' : ''}>Stay</option>
+                <option ${item.category === 'Activity' ? 'selected' : ''}>Activity</option>
+            </select>` : `
+            <select onchange="updateCategory('${item.name}', this.value)">
+                <option ${item.category === 'Flight' ? 'selected' : ''}>Flight</option>
+                <option ${item.category === 'Train' ? 'selected' : ''}>Train</option>
+                <option ${item.category === 'Bus' ? 'selected' : ''}>Bus</option>
+                <option ${item.category === 'Taxi' ? 'selected' : ''}>Taxi</option>
+            </select>`}
+        `;*/
+
+            let inputHTML = `<input class="location-search" placeholder="Click to pick..." readonly onclick="openHandler('${item.name}', '${item.type}', '${item.category}')" value="${item.value}">`;
+
+            let categoryOptions = '';
+            if (item.type === 'transit') {
+                categoryOptions = ['Flight', 'Train', 'Bus', 'Taxi'];
+            } else {
+                categoryOptions = ['Location', 'Stay', 'Activity'];
+            }
+            right.innerHTML = inputHTML + `
+        <select onchange="updateCategory('${item.name}', this.value)">
+            ${categoryOptions.map(opt => `<option ${item.category === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        </select>`;
+
+
+            right.appendChild(controls);
+            row.appendChild(left);
+            row.appendChild(right);
+            container.appendChild(row);
         });
-    });
+    }
+
+    function updateTime(name, value, field) {
+        const item = itinerary.find(i => i.name === name);
+        if (item) item[field] = value;
+    }
+
+    function updateCategory(name, value) {
+        const item = itinerary.find(i => i.name === name);
+        if (item) item.category = value;
+    }
+
+    function openHandler(name, type, category) {
+        if (type === 'transit') {
+            openTransitOverlay(name);
+        } else if (category === 'Location') {
+            openMap(name);
+        } else if (category === 'Stay') {
+            alert(`Search hotels for ${name} using SerpAPI`);
+        } else if (category === 'Activity') {
+            alert(`Search activities for ${name}`);
+        }
+    }
+
+
+    let map;
+    let marker;
+    let selectedInputName = null;
+
+    function openMap(name) {
+        selectedInputName = name;
+        const modal = document.getElementById("mapModal");
+        modal.style.display = "block";
+
+        if (!map) {
+            map = L.map('map').setView([48.8566, 2.3522], 5); // Default center: Paris
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            map.on('click', function (e) {
+                if (marker) marker.remove();
+                marker = L.marker(e.latlng).addTo(map);
+            });
+        }
+
+        document.getElementById("mapSearchInput").oninput = async function () {
+            const query = this.value;
+            const results = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`).then(res => res.json());
+            const suggestions = document.getElementById("searchSuggestions");
+            suggestions.innerHTML = "";
+
+            results.slice(0, 5).forEach(loc => {
+                const div = document.createElement("div");
+                div.textContent = loc.display_name;
+                div.onclick = () => {
+                    if (marker) marker.remove();
+                    const latlng = [parseFloat(loc.lat), parseFloat(loc.lon)];
+                    map.setView(latlng, 13);
+                    marker = L.marker(latlng).addTo(map);
+                    const item = itinerary.find(i => i.name === selectedInputName);
+                    if (item) item.value = loc.display_name;
+                    closeMapModal();
+                    renderItinerary();
+                };
+                suggestions.appendChild(div);
+            });
+        };
+    }
+
+    function openTransitOverlay(transitName) {
+        const index = itinerary.findIndex(i => i.name === transitName);
+        const from = findNearestLocation(index, -1);
+        const to = findNearestLocation(index, 1);
+
+        if (!from || !to) {
+            alert("Missing nearby stops.");
+            return;
+        }
+
+        const apiKey = "86940468db8a3e69a0249a1cde207a1d556634e25398ec8ff99bad04a7939943"; // Replace with your SerpAPI key
+        const url = `https://serpapi.com/search.json?engine=google_maps_directions&origin=${encodeURIComponent(from.value)}&destination=${encodeURIComponent(to.value)}&mode=transit&api_key=${apiKey}`;
+
+        fetch(url, {mode: 'no-cors'})
+            .then(res => res.json())
+            .then(data => {
+                const steps = data?.directions_routes?.[0]?.legs?.[0]?.steps;
+                if (!steps) {
+                    alert("No route found.");
+                    return;
+                }
+
+                const directions = steps.map(s => `${s.travel_mode}: ${s.instructions}`).join('<br>');
+                showOverlayPopup(`Transit from <b>${from.value}</b> to <b>${to.value}</b><hr>${directions}`);
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Failed to fetch directions.");
+            });
+    }
+
+    function showOverlayPopup(html) {
+        document.getElementById("transitContent").innerHTML = html;
+        document.getElementById("transitOverlay").style.display = "block";
+    }
+
+    /*function findNearestLocation(index, direction) {
+        let i = index + direction;
+        while (i >= 0 && i < itinerary.length) {
+            const item = itinerary[i];
+            if (item.type === "start" || item.type === "stop") {
+                return item;
+            }
+            i += direction;
+        }
+        return null;
+    }*/
+
+    function findNearestLocation(index, direction) {
+        let i = index + direction;
+        while (i >= 0 && i < itinerary.length) {
+            if (["start", "stop"].includes(itinerary[i].type)) {
+                return itinerary[i];
+            }
+            i += direction;
+        }
+        return null;
+    }
+
+    function closeDirectionsModal() {
+        document.getElementById("directionsModal").style.display = "none";
+    }
+
+    function closeMapModal() {
+        document.getElementById("mapModal").style.display = "none";
+    }
+
+    renderItinerary();
 </script>
