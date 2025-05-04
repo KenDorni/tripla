@@ -70,7 +70,7 @@ if (isset($_SESSION["OTP"])){
     if (isset($_POST["chars"])){
         echo "<pre>" . print_r(implode($_POST["chars"]) . "  " . $_SESSION["OTP"], true) . "</pre>";
         if ($_SESSION["OTP"] == implode($_POST["chars"])){
-            session_reset();
+            unset($_SESSION["OTP"]);
 
             register($dbc, $_POST["emailAddress"], $_POST["pw"], $_POST["username"]);
             //session_unset();
@@ -97,10 +97,8 @@ mysqli_close($dbc);
     <link rel="icon" href="assets/images/icon/tripla-icon.png">
     <!-- HEADER -->
     <link rel="stylesheet" href="assets/css/header.css">
-<<<<<<< HEAD
-    <link rel="stylesheet" href="assets/css/preferences.css"
-=======
->>>>>>> pages2
+
+    <link rel="stylesheet" href="assets/css/preferences.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
     <link href="//code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet" />
@@ -108,6 +106,7 @@ mysqli_close($dbc);
     <!-- Suchleiste -->
     <link rel="stylesheet" href="assets/css/searchField.css">
     <link rel="stylesheet" href="assets/css/preferences.css">
+    <link rel="stylesheet" href="assets/css/verification.css">
     <!--<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
 </head>
 <body>

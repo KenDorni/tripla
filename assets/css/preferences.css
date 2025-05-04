@@ -211,3 +211,86 @@ p {
     margin-top: 5px;
     text-align: center;
 }
+
+/* Dropdown (Who Section) */
+.dropdown-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.dropdown-toggle {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.dropdown-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 5;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 0.4rem;
+    width: 100%;
+}
+
+.dropdown-panel.active {
+    display: block;
+}
+
+.counter-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.counter-label {
+    font-size: 1rem;
+    flex: 1;
+}
+
+.counter {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.counter button {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.2rem;
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    background-color: #007bff;
+    text-align: center;
+}
+
+.counter button:hover {
+    background: #e0e0e0;
+}
+
+.done-button {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.done-button:hover {
+    background-color: #007bff;
+}

@@ -1,27 +1,27 @@
 <?php
 if (isset($_SESSION["OTP"])) {//Aaa123456+-
     ?>
-    <style>
-        .def-txt-input {
-            text-align: center;
-        }
-    </style>
-    <form method="post">
-        <fieldset>
-            <label>
-                OTP
-                <input type="text" maxlength="1" class="def-txt-input" name="chars[1]">
-                <input type="text" maxlength="1" class="def-txt-input" name="chars[2]">
-                <input type="text" maxlength="1" class="def-txt-input" name="chars[3]">
-                <input type="text" maxlength="1" class="def-txt-input" name="chars[4]">
-                <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
-                <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
-            </label>
-            <input type="hidden" name="username" value="<?php echo $_POST['username'];?>">
-            <input type="hidden" name="pw" value="<?php echo $_POST['pw'];?>">
-            <input type="hidden" name="emailAddress" value="<?php echo $_POST['emailAddress'];?>">
-        </fieldset>
+
+    <form method="post" class="verification-form">
+    <fieldset>
+        <label>
+        OTP
+        <div class="code-inputs">
+            <input type="text" maxlength="1" class="def-txt-input" name="chars[1]">
+            <input type="text" maxlength="1" class="def-txt-input" name="chars[2]">
+            <input type="text" maxlength="1" class="def-txt-input" name="chars[3]">
+            <input type="text" maxlength="1" class="def-txt-input" name="chars[4]">
+            <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
+            <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
+        </div>
+        </label>
+        <input type="hidden" name="username" value="<?php echo $_POST['username']; ?>">
+        <input type="hidden" name="pw" value="<?php echo $_POST['pw']; ?>">
+        <input type="hidden" name="emailAddress" value="<?php echo $_POST['emailAddress']; ?>">
+        <input type="submit" value="Verify">
+    </fieldset>
     </form>
+
     <script>
         let $inputs = $(".def-txt-input");
         let intRegex = /^\d+$/;
