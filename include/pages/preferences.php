@@ -60,7 +60,9 @@
     <!-- Navigation buttons -->
     <div class="buttons">
         <button>Back</button>
-        <button>Next</button>
+        <form method="get">
+            <button type="submit" name="page" value="Itinerary">Next</button>
+        </form>
     </div>
 </div>
 
