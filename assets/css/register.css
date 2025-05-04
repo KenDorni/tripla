@@ -1,0 +1,137 @@
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background-color: #f0f8ff;
+    background-image: url('../images/preferences/1.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+form {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+legend {
+    font-size: 28px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+label {
+    display: block;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-top: 8px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+input[type="submit"] {
+    background-color: #0071c2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #005ea6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 20px 0;
+}
+
+a {
+    color: #0071c2;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: block;
+    text-align: center;
+    margin: 10px 0;
+}
+
+a:hover {
+    color: #004a80;
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.success-message {
+    color: #28a745;
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .container {
+        margin: 50px auto;
+    }
+    
+    form {
+        padding: 20px;
+    }
+    
+    legend {
+        font-size: 24px;
+    }
+}
