@@ -1,7 +1,8 @@
-<style>
+<div class="container">
+    <h1>Your Travel Itinerary</h1>
+    <div id="timeline" class="timeline"></div>
+</div>
 
-</style>
-<div id="timeline" class="timeline"></div>
 <div id="mapModal" class="overlay">
     <div class="overlay-header">
         <input id="mapSearchInput" placeholder="Search location...">
@@ -10,6 +11,7 @@
     <div id="searchSuggestions" class="suggestions"></div>
     <div id="map"></div>
 </div>
+
 <div id="transitOverlay" class="overlay">
     <div class="overlay-header">
         <h3>Transit Options</h3>
@@ -40,6 +42,7 @@
         }
     ];
 
+    // The rest of your JavaScript remains unchanged
     function isEditable() {
         const start = itinerary.find(i => i.name === "start" && i.value);
         const end = itinerary.find(i => i.name === "end" && i.value);

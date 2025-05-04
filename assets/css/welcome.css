@@ -1,0 +1,92 @@
+.search-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1200px;
+    margin: 50px auto; /* Zentrieren des Containers */
+}
+
+#search-container .top-input {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 10px; /* Abstand zum unteren Bereich */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.top-input {
+    flex: 1;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 1px solid #e7e7e7;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.bottom-row {
+    display: flex;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    gap: 8px;
+}
+
+#search-container .search-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 15px;
+    font-size: 14px;
+    border: 1px solid #e7e7e7;
+    border-radius: 4px;
+}
+
+.search-button {
+    background-color: #0071c2;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #005ea6;
+}
+
+/* Add this if you want to have a blue background similar to the image */
+body {
+    background-color: #f0f8ff;
+    color: white;
+}
+
+/* Add a heading style similar to the booking.com page */
+.search-heading {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.search-heading h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+.search-heading p {
+    font-size: 16px;
+    margin-top: 0;
+}
