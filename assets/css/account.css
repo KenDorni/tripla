@@ -1,6 +1,6 @@
 body {
     font-family: 'Poppins', Arial, sans-serif;
-    background-color: #fffcf9;
+    background-color: #f0f8ff;
     background-image: url('../images/preferences/1.jpg');
     background-repeat: no-repeat;
     background-size: cover;
@@ -8,38 +8,43 @@ body {
     background-attachment: fixed;
     margin: 0;
     padding: 0;
-    color: #202020;
+    color: #333;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 50px auto;
-    padding: 30px;
-    background-color: rgba(255, 252, 249, 0.95);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card {
+    border: none;
     border-radius: 12px;
-    position: relative;
-    z-index: 1;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+.card-body {
+    padding: 30px;
 }
 
 h1 {
-    text-align: center;
-    color: #2db973;
+    color: #007bff;
     font-size: 2.2rem;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 h2 {
-    color: #ea6a34;
+    color: #007bff;
     font-size: 1.5rem;
-    margin-top: 25px;
-    margin-bottom: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 hr {
     border: none;
     height: 1px;
-    background-color: #e0e0e0;
+    background-color: #ddd;
     margin: 20px 0;
 }
 
@@ -47,7 +52,7 @@ label {
     display: block;
     margin-bottom: 15px;
     font-weight: bold;
-    color: #333;
+    color: #555;
     width: 100%;
 }
 
@@ -56,10 +61,10 @@ input[type="password"],
 input[disabled] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     border-radius: 6px;
     box-sizing: border-box;
-    background-color: #fffcf9;
+    background-color: #f9f9f9;
     font-size: 1rem;
     transition: all 0.3s ease;
     margin-top: 8px;
@@ -68,21 +73,21 @@ input[disabled] {
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    border-color: #2db973;
+    border-color: #007bff;
     outline: none;
-    box-shadow: 0 0 5px rgba(45, 185, 115, 0.5);
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 input[disabled] {
-    background-color: #f5f5f5;
+    background-color: #e9ecef;
     cursor: not-allowed;
 }
 
 input[type="button"] {
     padding: 12px 20px;
     border: none;
-    background-color: #2db973;
-    color: #fffcf9;
+    background-color: #007bff;
+    color: #fff;
     border-radius: 6px;
     cursor: pointer;
     font-size: 1rem;
@@ -91,24 +96,20 @@ input[type="button"] {
 }
 
 input[type="button"]:hover {
-    background-color: #25a062;
+    background-color: #0056b3;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(45, 185, 115, 0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 #reset-password-btn {
     display: inline-block;
     margin-left: 10px;
-    background-color: #81deef;
-}
-
-#reset-password-btn:hover {
-    background-color: #6cd0e3;
 }
 
 #pw-reset {
-    background-color: #fffcf9;
-    border: 1px solid #e0e0e0;
+    display: block;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
     margin-top: 15px;
@@ -118,11 +119,11 @@ input[type="button"]:hover {
 #change-password-btn {
     width: 100%;
     margin-top: 15px;
-    background-color: #ea6a34;
+    background-color: #0071c2;
 }
 
 #change-password-btn:hover {
-    background-color: #d55a29;
+    background-color: #005ea6;
 }
 
 /* Responsive adjustments */
@@ -135,14 +136,13 @@ input[type="button"]:hover {
         font-size: 1.3rem;
     }
     
-    .container {
+    .card-body {
         padding: 20px;
-        margin: 30px 15px;
     }
 }
 
 @media (max-width: 480px) {
-    .container {
+    .card-body {
         padding: 15px;
     }
     
