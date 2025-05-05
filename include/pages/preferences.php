@@ -92,7 +92,9 @@
 
     <!-- Navigation buttons -->
     <div class="buttons">
-        <button>Back</button>
+        <form method="get">
+            <button type="submit" name="page" value="welcome">Back</button>
+        </form>
         <form method="get">
             <button type="submit" name="page" value="Itinerary">Next</button>
         </form>

@@ -1,0 +1,384 @@
+/* Base styling */
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 50px auto;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Timeline styling */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0;
+    border-left: 3px solid #007bff;
+    position: relative;
+    margin-left: 40px;
+}
+
+/* Adjust entry position to make room for buttons */
+.entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+    transition: all 0.3s ease;
+    padding-right: 40px; /* Add padding to the right to prevent overlap */
+}
+
+.entry::before {
+    content: '';
+    position: absolute;
+    left: -45px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #007bff;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+    z-index: 2;
+}
+
+.entry[data-name^="transit"]::before {
+    background-color: #ff9800;
+}
+
+.left {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center; /* Change from flex-end to center */
+    text-align: center; /* Change from right to center */
+    margin-right: 40px;
+}
+
+/* Ensure proper positioning for right side content */
+.right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    position: relative;
+    padding-right: 10px; /* Add padding to make space for controls */
+}
+
+/* Input styling */
+input[type="datetime-local"], 
+input[type="text"],
+select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+input[type="datetime-local"]:focus, 
+input[type="text"]:focus,
+select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.left input[type="datetime-local"] {
+    width: 200px;
+    padding: 8px;
+    background-color: #f9f9f9;
+    margin: 0 auto; /* Add this to center the inputs */
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 4px;
+    position: absolute;
+    right: 12px;
+    top: 90px;
+}
+
+/* Make the buttons more visible */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow for better visibility */
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.controls button {
+    background-color: #dc3545;
+}
+
+.controls button:hover {
+    background-color: #c82333;
+}
+
+/* Update the add-section button positioning */
+.add-section {
+    display: flex;
+    align-items: center;
+    margin: 5px 0 15px -45px;
+    position: relative;
+    z-index: 5; /* Ensure it appears above other elements */
+}
+
+.add-section button {
+    margin-right: 290px;
+    font-weight: bold;
+    position: absolute;
+    right: 870px; /* Move button*/
+}
+
+.add-section::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    width: 8px;
+    height: 8px;
+    background-color: #28a745;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.center-line {
+    position: absolute;
+    left: 250px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, #007bff, #00c6ff);
+    z-index: -1;
+}
+
+.location-search {
+    width: 100%;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.location-search:hover {
+    background-color: #f0f0f0;
+}
+
+select {
+    width: 100%;
+    cursor: pointer;
+    background-color: #f9f9f9;
+}
+
+/* Overlay styling */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: white;
+    border: none;
+    border-radius: 12px;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.overlay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.overlay-header h3 {
+    margin: 0;
+    color: #007bff;
+}
+
+.overlay-header button {
+    border-radius: 6px;
+    width: auto;
+    padding: 8px 15px;
+}
+
+.overlay-header input {
+    flex: 1;
+    margin-right: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.suggestions {
+    border: 1px solid #eee;
+    max-height: 150px;
+    overflow-y: auto;
+    background: white;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions div {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestions div:hover {
+    background-color: #f5f7fa;
+}
+
+#map {
+    height: calc(100% - 140px);
+    border-radius: 8px;
+    border: 1px solid #eee;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+#transitContent {
+    padding: 15px !important;
+    line-height: 1.6;
+}
+
+#transitContent hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 15px 0;
+}
+
+/* Type-specific styling */
+.entry[data-name="start"] .right select,
+.entry[data-name="end"] .right select {
+    border-left: 4px solid #28a745;
+}
+
+.entry[data-name^="transit"] .right select {
+    border-left: 4px solid #ff9800;
+}
+
+.entry[data-name^="stop"] .right select {
+    border-left: 4px solid #17a2b8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .timeline {
+        margin-left: 20px;
+    }
+    
+    .left {
+        width: 180px;
+        margin-right: 20px;
+    }
+    
+    .center-line {
+        left: 200px;
+    }
+    
+    .add-section button {
+        margin-right: 220px;
+    }
+    
+    .entry::before {
+        left: -25px;
+    }
+    
+    .add-section {
+        margin-left: -25px;
+    }
+}
+
+@media (max-width: 600px) {
+    .timeline {
+        margin-left: 0;
+        padding-left: 20px;
+        border-left: none;
+        border-top: 3px solid #007bff;
+    }
+
+    .entry {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 15px;
+        padding-top: 15px;
+    }
+
+    .entry::before {
+        left: -15px;
+        top: 15px;
+    }
+
+    .left, .right {
+        width: 100%;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .left {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .left input[type="datetime-local"] {
+        width: 100%;
+    }
+
+    .center-line {
+        display: none;
+    }
+
+    .add-section {
+        margin-left: -15px;
+        margin-top: 0;
+    }
+
+    .add-section button {
+        margin-right: 0;
+    }
+    
+    /* Update the controls positioning */
+    .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 4px;
+        position: absolute;
+        right: -30px; /* Move it further to the right */
+        top: 5px;
+        z-index: 5; /* Ensure it appears above other elements */
+    }
+    
+    .overlay {
+        width: 95%;
+        height: 90%;
+        padding: 15px;
+    }
+}

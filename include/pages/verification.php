@@ -1,79 +1,112 @@
 <?php
-if (isset($_SESSION["OTP"])) {//Aaa123456+-
-    ?>
-
+if (isset($_SESSION["OTP"])) { //Aaa123456+-
+?>
+<div class="container">
     <form method="post" class="verification-form">
-    <fieldset>
-        <label>
-        OTP
-        <div class="code-inputs">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[1]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[2]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[3]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[4]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
-            <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
-        </div>
-        </label>
-        <input type="hidden" name="username" value="<?php echo $_POST['username']; ?>">
-        <input type="hidden" name="pw" value="<?php echo $_POST['pw']; ?>">
-        <input type="hidden" name="emailAddress" value="<?php echo $_POST['emailAddress']; ?>">
-        <input type="submit" value="Verify">
-    </fieldset>
+        <fieldset>
+            <legend>Enter OTP</legend>
+            <label>
+                Please enter the verification code sent to your email
+            </label>
+            <div class="code-inputs">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[1]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[2]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[3]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[4]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[5]">
+                <input type="text" maxlength="1" class="def-txt-input" name="chars[6]">
+            </div>
+            <a href="#" class="resend-link">Resend</a>
+            <input type="hidden" name="username" value="<?php echo isset($_POST['username']) ? $_POST['username'] : ''; ?>">
+            <input type="hidden" name="pw" value="<?php echo isset($_POST['pw']) ? $_POST['pw'] : ''; ?>">
+            <input type="hidden" name="emailAddress" value="<?php echo isset($_POST['emailAddress']) ? $_POST['emailAddress'] : ''; ?>">
+            <input type="submit" value="Continue">
+            
+            <?php if (isset($message)): ?>
+                <div class="<?php echo strpos($message, 'success') !== false ? 'success-message' : 'error-message'; ?>">
+                    <?php echo $message; ?>
+                </div>
+            <?php endif; ?>
+        </fieldset>
     </form>
+</div>
 
-    <script>
-        let $inputs = $(".def-txt-input");
-        let intRegex = /^\d+$/;
+<script>
+    let $inputs = $(".def-txt-input");
+    let intRegex = /^\d+$/;
 
-        // Prevents user from manually entering non-digits.
-        $inputs.on("input.fromManual", function () {
-            if (!intRegex.test($(this).val())) {
-                $(this).val("");
+    // Auto-focus first input
+    $inputs.eq(0).focus();
+
+    // Prevents user from manually entering non-digits
+    $inputs.on("input.fromManual", function () {
+        if (!intRegex.test($(this).val())) {
+            $(this).val("");
+        } else {
+            // Auto advance to next input
+            const index = $inputs.index(this);
+            if (index < $inputs.length - 1) {
+                $inputs.eq(index + 1).focus();
             }
-        });
-
-
-        // Prevents pasting non-digits and if value is 6 characters long will parse each character into an individual box.
-        $inputs.on("paste", function () {
-            let $this = $(this);
-            let originalValue = $this.val();
-
-            $this.val("");
-
-            $this.one("input.fromPaste", function () {
-                let $currentInputBox = $(this);
-
-                let pastedValue = $currentInputBox.val();
-
-                if (pastedValue.length === 6 && intRegex.test(pastedValue)) {
-                    pasteValues(pastedValue);
-                } else {
-                    $this.val(originalValue);
-                }
-
-                $inputs.attr("maxlength", 1);
-            });
-
-            $inputs.attr("maxlength", 6);
-        });
-
-
-        // Parses the individual digits into the individual boxes.
-        function pasteValues(element) {
-            let values = element.split("");
-
-            $(values).each(function (index) {
-                let $inputBox = $('.def-txt-input[name="chars[' + (index + 1) + ']"]');
-                $inputBox.val(values[index])
-            }).after(
-                $("form").submit()
-            );
         }
-    </script>
-    <?php
+    });
+
+    // Handle backspace to go to previous input
+    $inputs.on("keydown", function(e) {
+        const index = $inputs.index(this);
+        if (e.which === 8 && !$(this).val() && index > 0) {
+            $inputs.eq(index - 1).focus();
+        }
+    });
+
+    // Prevents pasting non-digits and if value is 6 characters long will parse each character into an individual box
+    $inputs.on("paste", function () {
+        let $this = $(this);
+        let originalValue = $this.val();
+
+        $this.val("");
+
+        $this.one("input.fromPaste", function () {
+            let $currentInputBox = $(this);
+
+            let pastedValue = $currentInputBox.val();
+
+            if (pastedValue.length === 6 && intRegex.test(pastedValue)) {
+                pasteValues(pastedValue);
+            } else {
+                $this.val(originalValue);
+            }
+
+            $inputs.attr("maxlength", 1);
+        });
+
+        $inputs.attr("maxlength", 6);
+    });
+
+    // Parses the individual digits into the individual boxes
+    function pasteValues(element) {
+        let values = element.split("");
+
+        $(values).each(function (index) {
+            let $inputBox = $('.def-txt-input[name="chars[' + (index + 1) + ']"]');
+            $inputBox.val(values[index])
+        });
+
+        // Focus on last box after paste
+        $inputs.eq(5).focus();
+    }
+    
+    // Resend link functionality
+    document.querySelector('.resend-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('Code resent to your email');
+    });
+</script>
+<?php
 } else {
-    echo "<h1>Hippity Hoppity get off my property</h1><br><pre style='white-space: pre;
+    echo "<div class='container'>";
+    echo "<h1>Hippity Hoppity get off my property</h1>";
+    echo "<pre style='white-space: pre;
     font-family: monospace;
     font-size: 12px;
     line-height: 12px;
@@ -142,7 +175,7 @@ if (isset($_SESSION["OTP"])) {//Aaa123456+-
                                                                              @@++=#%#=+==++++=-@@--==========================-::%@#-=@***+++%@*-=%@@@@@@-                        
                                                                              @%===*@=@%=-==+++=:=@======================-::::=%@@=::=%*+*#@@%#@%%.                               
                                                                              @==+++@@ %@%--===++=::===============--::::-*%@@@%:--===*@@@@%*%*#%@@@@@@@@%: :=                    
-                                                 %@@@@:        :=:        :%@==+- .=@@  @@@=--==++=-::::::-=======**%@@@@#+-----=+*%%%%*==+@%%#*=+*%@%#%@@@%#@@%                 
+                                                                 %@@@@:        :=:        :%@==+- .=@@  @@@=--==++=-::::::-=======**%@@@@#+-----=+*%%%%*==+@%%#*=+*%@%#%@@@%#@@%                 
                                               @@@*::-=%@@@@@@@@@#%@@@@@@%*+*+=+*:::-=@@   *@@@#----=%@@@@*-::::-=====:-------+%%%%@%==+%%%%=#%%*%@+-==: :=%@@@@@                 
                                             @@@=-+**%@@=-:-=++==-=-=====%%@%==+:. -=+#@@      @@@@@@@-  *@@@@@%---:::-=%@@@@@@@%===@@@@@=-==-==@@ @@@@@@%%@@                     
                                 =@%.      @@@--=***@%+-=#%%*++*##%####=@#======--=*#*==@%                    .@@@@@@@@@@@=   *@@@@@@  %@@@@@@@@@-     +===:                      
@@ -152,5 +185,6 @@ if (isset($_SESSION["OTP"])) {//Aaa123456+-
                     #@+======*@****+**%@@@@@-. .=====*@@        %@%-==:.:===*%@@                                                                                                 
                      :@@@@@@@@*:@@@@@@*:   @@@@@@@@@@@=          @@@@@%*#@@@@=                                                                                                   
                                                                      =%@%*                                                                                                       </pre>";
+    echo "</div>";
 }
 ?>
