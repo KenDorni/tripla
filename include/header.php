@@ -11,7 +11,7 @@
             <!-- Bottom header with navigation buttons -->
             <div class="nav-container">
                 <ul class="nav-links">
-                    <li><a href="#"></i>Button 1</a></li>
+                    <li><a href="?page=recommendations"></i>Recommendations</a></li>
                     <li><a href="#"></i>Button 2</a></li>
                     <li><a href="#"></i>Button 3</a></li>
                     <li><a href="#"></i>Button 4</a></li>
