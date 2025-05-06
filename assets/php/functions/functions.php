@@ -9,6 +9,108 @@ require 'assets/php/phpmailer/src/SMTP.php';
 require_once(__DIR__ . '/../database/db_functions.php');
 
 /**
+ * Initialize foreign key session if not exists
+ */
+function initForeignKeySession() {
+    if (!isset($_SESSION['foreign-key'])) {
+        $_SESSION['foreign-key'] = [
+            'Account' => null,
+            'Itinerary' => null,
+            'Itinerary_Stop' => null,
+            'Itinerary_Transit' => null
+        ];
+    }
+}
+
+/**
+ * Get foreign key from session
+ * @param string $type Type of the foreign key (Account, Itinerary, etc.)
+ * @param int $userId User ID to check ownership
+ * @return mixed Foreign key value or null if not found
+ * @throws Exception if type is invalid
+ */
+function getForeignKey($type, $userId = null) {
+    initForeignKeySession();
+    
+    if (!in_array($type, ['Account', 'Itinerary', 'Itinerary_Stop', 'Itinerary_Transit'])) {
+        throw new Exception("Invalid foreign key type: $type");
+    }
+    
+    $foreignKey = $_SESSION['foreign-key'][$type];
+    
+    // For Account, we don't need to check userId
+    if ($type !== 'Account' && $userId !== null && $foreignKey !== null) {
+        // Verify ownership - this would typically be done in the database
+        // but we're checking here for consistency
+        $dbc = dbConnect();
+        $query = "SELECT 1 FROM Itinerary WHERE pk_itinerary = ? AND fk_user_created = ?";
+        $result = queryStatement($dbc, $query, 'ii', $foreignKey, $userId);
+        
+        if (!$result || mysqli_num_rows($result) === 0) {
+            throw new Exception("Unauthorized access to $type");
+        }
+    }
+    
+    return $foreignKey;
+}
+
+/**
+ * Set foreign key in session
+ * @param string $type Type of the foreign key (Account, Itinerary, etc.)
+ * @param mixed $foreignKey The foreign key value
+ * @param int|null $userId User ID for ownership (null for Account)
+ * @throws Exception if type is invalid or if trying to set a foreign key that exists
+ */
+function setForeignKey($type, $foreignKey, $userId = null) {
+    initForeignKeySession();
+    
+    if (!in_array($type, ['Account', 'Itinerary', 'Itinerary_Stop', 'Itinerary_Transit'])) {
+        throw new Exception("Invalid foreign key type: $type");
+    }
+    
+    // Check if we're trying to set a foreign key that already exists
+    if ($_SESSION['foreign-key'][$type] !== null) {
+        throw new Exception("Foreign key for $type already exists");
+    }
+    
+    $_SESSION['foreign-key'][$type] = $foreignKey;
+    
+    // For non-Account types, verify ownership
+    if ($type !== 'Account' && $userId !== null) {
+        $dbc = dbConnect();
+        $query = "SELECT 1 FROM Itinerary WHERE pk_itinerary = ? AND fk_user_created = ?";
+        $result = queryStatement($dbc, $query, 'ii', $foreignKey, $userId);
+        
+        if (!$result || mysqli_num_rows($result) === 0) {
+            // Remove the foreign key if ownership verification fails
+            $_SESSION['foreign-key'][$type] = null;
+            throw new Exception("Unauthorized to set foreign key for $type");
+        }
+    }
+}
+
+/**
+ * Remove foreign key from session
+ * @param string $type Type of the foreign key (Account, Itinerary, etc.)
+ * @return bool Returns true if foreign key was successfully removed, false if it didn't exist
+ * @throws Exception if type is invalid
+ */
+function removeForeignKey($type) {
+    initForeignKeySession();
+    
+    if (!in_array($type, ['Account', 'Itinerary', 'Itinerary_Stop', 'Itinerary_Transit'])) {
+        throw new Exception("Invalid foreign key type: $type");
+    }
+    
+    if ($_SESSION['foreign-key'][$type] === null) {
+        return false; // Foreign key didn't exist
+    }
+    
+    $_SESSION['foreign-key'][$type] = null;
+    return true; // Successfully removed
+}
+
+/**
  * Check whether the username and password provided match
  * @param $dbc
  * @param $user
