@@ -7,9 +7,9 @@
                 <a href="index.php" class="logo">Tripla</a>
                 <?php
                 if (isset($_SESSION["user"])){
-                    echo '<div class="dropdown">
+                    echo '<div class="acc-dropdown">
                              <span class="sign-in">' . $_SESSION["user"]["username"] . '</span>
-                             <div class="dropdown-content">
+                             <div class="acc-dropdown-content">
                                 <a href="?page=account" class="sign-in">Account</a>
                                 <a href="?page=myItinerary" class="sign-in">My Itineraries</a>
                                 <form method="post">

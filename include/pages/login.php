@@ -28,7 +28,7 @@
 
 <?php
 // For development only, remove in production
-if (isset($_SESSION) && !empty($_SESSION)) {
+/*if (isset($_SESSION) && !empty($_SESSION)) {
     echo "<div style='margin-top: 20px; font-size: 12px; color: #777;'><pre>" . print_r($_SESSION, true) . "</pre></div>";
-}
+}*/
 ?>

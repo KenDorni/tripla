@@ -160,12 +160,12 @@ header {
     }
 }
 
-.dropdown {
+.acc-dropdown {
     position: relative;
     display: block;
 }
 
-.dropdown-content {
+.acc-dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -175,11 +175,11 @@ header {
     z-index: 1;
 }
 
-.dropdown:hover .dropdown-content {
+.acc-dropdown:hover .acc-dropdown-content {
     display: block;
 }
 
-.dropdown-button{
+.acc-dropdown-button{
     background-color: white;
     color: #003580;
     padding: 0.5rem 1rem;
@@ -190,6 +190,6 @@ header {
     transition: background-color 0.2s;
 }
 
-.dropdown-button:hover {
+.acc-dropdown-button:hover {
     background-color: #f0f0f0;
 }
