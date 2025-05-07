@@ -1,10 +1,41 @@
+<?php
+// Get values from welcome page form submission
+$selectedType = isset($_GET['type']) ? htmlspecialchars($_GET['type']) : '';
+$selectedLocation = isset($_GET['location']) ? htmlspecialchars($_GET['location']) : '';
+$selectedDates = isset($_GET['dates']) ? htmlspecialchars($_GET['dates']) : '';
+
+// Parse the participants JSON if available
+$participantsData = '{"adults":3,"children":0,"rooms":1}'; // Default value
+if (isset($_GET['participants']) && !empty($_GET['participants'])) {
+    $participantsData = $_GET['participants'];
+    $participantsObj = json_decode($participantsData);
+    $selectedParticipants = $participantsObj->adults . ' Adults · ' . 
+                            $participantsObj->children . ' Children · ' . 
+                            $participantsObj->rooms . ' Room' . 
+                            ($participantsObj->rooms > 1 ? 's' : '');
+} else {
+    $selectedParticipants = '3 Adults · 0 Children · 1 Room';
+}
+?>
 <div class="container">
     <h1>Preferences</h1>
+    <form method="get" id="travel-form">
+    <!-- Hidden inputs for storing data -->
+    <input type="hidden" id="dates" name="dates" value="<?php echo $selectedDates; ?>">
+    <input type="hidden" id="participants" name="participants" value='<?php echo $participantsData; ?>'>
+
     <!-- Dropdown for selecting the type of travel -->
     <div class="form-group">
         <label for="type">Type</label>
-        <select id="type">
-            <option value="sightseeing">Sightseeing</option>
+        <select id="type" name="type">
+            <option value="sightseeing" <?php echo ($selectedType == 'sightseeing') ? 'selected' : ''; ?>>Sightseeing</option>
+            <option value="Beach" <?php echo ($selectedType == 'Beach') ? 'selected' : ''; ?>>Beach</option>
+            <option value="Explore" <?php echo ($selectedType == 'Explore') ? 'selected' : ''; ?>>Explore</option>
+            <option value="Ski" <?php echo ($selectedType == 'Ski') ? 'selected' : ''; ?>>Ski</option>
+            <option value="City" <?php echo ($selectedType == 'City') ? 'selected' : ''; ?>>City Break</option>
+            <option value="Cultural" <?php echo ($selectedType == 'Cultural') ? 'selected' : ''; ?>>Cultural</option>
+            <option value="Adventure" <?php echo ($selectedType == 'Adventure') ? 'selected' : ''; ?>>Adventure</option>
+            <option value="Relaxation" <?php echo ($selectedType == 'Relaxation') ? 'selected' : ''; ?>>Relaxation</option>
         </select>
     </div>
 
@@ -12,21 +43,32 @@
     <div class="form-group">
         <label for="where">Where</label>
         <select id="where">
-            <option value="" disabled selected>Select a country</option>
+            <option value="" disabled <?php echo empty($selectedLocation) ? 'selected' : ''; ?>>Select a country</option>
+            <!-- Countries will be populated via JavaScript -->
         </select>
     </div>
 
     <!-- Input field for selecting the date -->
     <div class="form-group">
-        <label for="datepicker">When</label>
-        <input type="text" id="datepicker" placeholder="Select Date">
+        <label for="when">When</label>
+        <div class="date-range-container">
+            <div class="date-inputs">
+                <div class="date-input">
+                    <input type="text" id="startDate" name="startDate" placeholder="Check-in" readonly>
+                </div>
+                <div class="date-separator">→</div>
+                <div class="date-input">
+                    <input type="text" id="endDate" name="endDate" placeholder="Check-out" readonly>
+                </div>
+            </div>
+        </div>
     </div>
 
 
     <!-- Input field for specifying the number of travelers -->
      <label for="who">Who</label>
     <div class="dropdown-container">
-        <div class="dropdown-toggle" id="travelerToggle">3 Adults · 0 Children · 1 Room</div>
+        <div class="dropdown-toggle" id="travelerToggle"><?php echo $selectedParticipants; ?></div>
         
         <div class="dropdown-panel" id="travelerPanel">
             <div class="counter-group">
@@ -93,7 +135,7 @@
     <!-- Navigation buttons -->
     <div class="buttons">
         <form method="get">
-            <button type="submit" name="page" value="welcome">Back</button>
+            <button type="button" onclick="window.location.href='index.php?page=welcome'">Back</button>
         </form>
         <form method="get">
             <button type="submit" name="page" value="Itinerary">Next</button>
@@ -115,12 +157,15 @@
         document.getElementById('childrenCount').textContent = counts.children;
         document.getElementById('roomsCount').textContent = counts.rooms;
         toggle.textContent = `${counts.adults} Adults · ${counts.children} Children · ${counts.rooms} Room${counts.rooms > 1 ? 's' : ''}`;
+        
+        // Update the hidden input with JSON data
+        document.getElementById('participants').value = JSON.stringify(counts);
     }
 
     function updateCount(type, delta) {
         if (counts[type] + delta >= 0) {
-        counts[type] += delta;
-        updateDisplay();
+            counts[type] += delta;
+            updateDisplay();
         }
     }
 
@@ -132,13 +177,56 @@
         panel.classList.remove('active');
     }
 
-    // Initialize display
+    // Initialize display and set the hidden input
     updateDisplay();
+
+    // Update the form submission logic
+    document.getElementById('travel-form').addEventListener('submit', function(e) {
+        // Prevent the default form submission
+        e.preventDefault();
+        
+        // Format the selected country data before submission
+        const whereSelect = document.getElementById('where');
+        
+        // Check if a country is selected
+        if (!whereSelect.value) {
+            alert("Please select a country");
+            return;
+        }
+        
+        // Check if both dates are selected
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        
+        if (!startDate || !endDate) {
+            alert("Please select both check-in and check-out dates");
+            return;
+        }
+        
+        // Combine dates for backward compatibility
+        document.getElementById('dates').value = startDate + " - " + endDate;
+        
+        // Parse the country JSON and extract just the country name
+        const countryData = JSON.parse(whereSelect.value);
+        
+        // Create the URL with correct parameters
+        let url = 'index.php?';
+        url += 'type=' + encodeURIComponent(document.getElementById('type').value);
+        url += '&location=' + encodeURIComponent(countryData.country);
+        url += '&dates=' + encodeURIComponent(document.getElementById('dates').value);
+        url += '&startDate=' + encodeURIComponent(startDate);
+        url += '&endDate=' + encodeURIComponent(endDate);
+        url += '&participants=' + encodeURIComponent(document.getElementById('participants').value);
+        url += '&page=preferences';
+        
+        // Navigate to the constructed URL
+        window.location.href = url;
+    });
+
     // Function to parse the CSV file and populate the country dropdown
     async function parseCSV() {
         try {
             const response = await fetch('include/pages/countries.csv');
-            console.log(response)
             const csvText = await response.text();
             const rows = csvText.split('\n').slice(1); // Skip the header row
 
@@ -169,7 +257,6 @@
         const countrySelect = document.getElementById('where');
         countries.forEach(country => {
             const option = document.createElement('option');
-            // Include the country name in the value along with longitude and latitude
             option.value = JSON.stringify({
                 longitude: country.longitude,
                 latitude: country.latitude,
@@ -191,7 +278,7 @@
     // Function to fetch weather data for a specific month and country
     async function fetchWeatherDataForMonth(year, month, country) {
         const startDate = `${year - 1}-${month.toString().padStart(2, '0')}-01`;
-        const endDate = `${year - 1}-${month.toString().padStart(2, '0')}-${new Date(year - 1, month, 0).getDate()}`; // Correct last day of the month
+        const endDate = `${year - 1}-${month.toString().padStart(2, '0')}-${new Date(year - 1, month, 0).getDate()}`;
         const url = `https://meteostat.p.rapidapi.com/point/daily?lat=${country.latitude}&lon=${country.longitude}&start=${startDate}&end=${endDate}`;
 
         try {
@@ -199,7 +286,7 @@
                 method: 'GET',
                 headers: {
                     'x-rapidapi-host': 'meteostat.p.rapidapi.com',
-                    'x-rapidapi-key': '7fb5cc25ccmsh7ff22ca39fa4f6ep14c3eejsned96868d3b3c' // Replace with your RapidAPI key
+                    'x-rapidapi-key': '7fb5cc25ccmsh7ff22ca39fa4f6ep14c3eejsned96868d3b3c'
                 }
             });
 
@@ -210,8 +297,6 @@
             const weatherData = await weatherResponse.json();
 
             if (weatherData && weatherData.data) {
-                //console.log(weatherData.data);
-                // Process the weather data to extract relevant information
                 window.weatherData = weatherData.data.reduce((acc, day) => {
                     const formattedDate = addOneYear(day.date); // Add 1 year to the date
                     const conditions = [];
@@ -251,50 +336,85 @@
 
     // Function to update weather data and refresh the datepicker
     async function updateWeatherData(year, month, country) {
-        //console.log(`Year: ${year}, Month: ${month}`);
         const weatherData = await fetchWeatherDataForMonth(year, month, country);
         window.weatherData = weatherData;
-        addCustomInformation(year, month);
+        addWeatherToDatepickers(year, month);
     }
 
-    // Function to add custom weather information to the datepicker
-    function addCustomInformation(year, month) {
-        setTimeout(function () {
-            $(".ui-datepicker-calendar td").each(function () {
-                let date = $(this).text();
-                if (/\d/.test(date)) {
-                    const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${date.padStart(2, '0')}`;
+    // Function to add weather to datepickers
+    function addWeatherToDatepickers(year, month) {
+        setTimeout(() => {
+            $(".ui-datepicker a.ui-state-default").each(function() {
+                const day = $(this).text();
+                if (day) {
+                    const paddedDay = day.toString().padStart(2, '0');
+                    const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${paddedDay}`;
                     if (window.weatherData && window.weatherData[formattedDate]) {
                         const weather = window.weatherData[formattedDate];
-                        const anchor = $(this).find("a");
-                        anchor.attr('data-custom', `${weather.temp} ${weather.emoji}`);
+                        $(this).attr('data-custom', `${weather.temp}\n${weather.emoji}`);
                     }
                 }
             });
-        }, 0);
+        }, 100);
     }
 
-    // Initialize the datepicker and parse the CSV file on page load
-    $(function () {
-        $("#datepicker").datepicker({
-            firstDay: 1, // Set Monday as the first day of the week
-            beforeShow: function (input, inst) {
-                const year = inst.drawYear || new Date().getFullYear(); // Fallback to current year
-                const month = (inst.drawMonth || new Date().getMonth()) + 1; // Fallback to current month
-                const countrySelect = document.getElementById('where');
-                const selectedCountry = JSON.parse(countrySelect.value);
-                updateWeatherData(year, month, selectedCountry);
+    $(function() {
+        // Initialize each datepicker separately
+        $("#startDate").datepicker({
+            dateFormat: "mm/dd/yy",
+            minDate: 0,
+            firstDay: 1,
+            changeMonth: true,
+            beforeShowDay: function(date) {
+                return [true, date.getDay() === 0 || date.getDay() === 6 ? "weekend" : ""];
             },
-            onChangeMonthYear: function (year, month) {
+            beforeShow: function() {
                 const countrySelect = document.getElementById('where');
-                const selectedCountry = JSON.parse(countrySelect.value);
-                updateWeatherData(year, month, selectedCountry);
+                if (countrySelect.value) {
+                    const selectedCountry = JSON.parse(countrySelect.value);
+                    const today = new Date();
+                    updateWeatherData(today.getFullYear(), today.getMonth() + 1, selectedCountry);
+                }
             },
-            beforeShowDay: function (date) {
-                return [true, date.getDay() === 6 || date.getDay() === 0 ? "weekend" : "weekday"];
+            onChangeMonthYear: function(year, month) {
+                const countrySelect = document.getElementById('where');
+                if (countrySelect.value) {
+                    const selectedCountry = JSON.parse(countrySelect.value);
+                    updateWeatherData(year, month, selectedCountry);
+                }
+            },
+            onSelect: function(selectedDate) {
+                const date = new Date(selectedDate);
+                date.setDate(date.getDate() + 1); // Set minimum end date to next day
+                $("#endDate").datepicker("option", "minDate", date);
             }
         });
-
+        
+        $("#endDate").datepicker({
+            dateFormat: "mm/dd/yy",
+            minDate: +1, // One day from today by default
+            firstDay: 1,
+            changeMonth: true,
+            beforeShowDay: function(date) {
+                return [true, date.getDay() === 0 || date.getDay() === 6 ? "weekend" : ""];
+            },
+            beforeShow: function() {
+                const countrySelect = document.getElementById('where');
+                if (countrySelect.value) {
+                    const selectedCountry = JSON.parse(countrySelect.value);
+                    const today = new Date();
+                    updateWeatherData(today.getFullYear(), today.getMonth() + 1, selectedCountry);
+                }
+            },
+            onChangeMonthYear: function(year, month) {
+                const countrySelect = document.getElementById('where');
+                if (countrySelect.value) {
+                    const selectedCountry = JSON.parse(countrySelect.value);
+                    updateWeatherData(year, month, selectedCountry);
+                }
+            }
+        });
+        
         parseCSV();
     });
 
@@ -312,11 +432,82 @@
     document.addEventListener("DOMContentLoaded", function () {
         updateBudgetValue();
     });
-</script>
 
-<style>
-    /* Highlight weekends in the datepicker */
-    .ui-datepicker .weekend .ui-state-default {
-        background: #FEA;
-    }
-</style>
+    // Add this at the end of your existing script
+    $(document).ready(function() {
+        // When countries are loaded, try to select the one from the URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const locationParam = urlParams.get('location');
+        const startDateParam = urlParams.get('startDate');
+        const endDateParam = urlParams.get('endDate');
+        const participantsParam = urlParams.get('participants');
+        
+        if (locationParam) {
+            // Wait for countries to load
+            const checkCountriesLoaded = setInterval(function() {
+                const countrySelect = document.getElementById('where');
+                if (countrySelect.options.length > 1) {
+                    clearInterval(checkCountriesLoaded);
+                    
+                    // Try to find and select the matching country
+                    let foundMatch = false;
+                    Array.from(countrySelect.options).forEach(option => {
+                        if (option.value && option.value !== 'null') {
+                            try {
+                                const countryData = JSON.parse(option.value);
+                                if (countryData.country && countryData.country.toLowerCase() === locationParam.toLowerCase()) {
+                                    countrySelect.value = option.value;
+                                    foundMatch = true;
+                                    
+                                    // Trigger change event to update weather data
+                                    const event = new Event('change');
+                                    countrySelect.dispatchEvent(event);
+                                }
+                            } catch (e) {
+                                console.error("Error parsing country data:", e);
+                            }
+                        }
+                    });
+                    
+                    // If no match was found, set a default text for the selected country
+                    if (!foundMatch && locationParam) {
+                        // Create a new option for the country
+                        const option = document.createElement('option');
+                        option.textContent = locationParam;
+                        option.value = JSON.stringify({
+                            longitude: 0,
+                            latitude: 0,
+                            country: locationParam
+                        });
+                        option.selected = true;
+                        countrySelect.appendChild(option);
+                    }
+                }
+            }, 100);
+        }
+        // Initialize dates from URL parameters
+        if (startDateParam) {
+            $("#startDate").datepicker("setDate", new Date(startDateParam));
+        }
+        
+        if (endDateParam) {
+            $("#endDate").datepicker("setDate", new Date(endDateParam));
+        }
+        
+        // Initialize participant counts if available
+        if (participantsParam) {
+            try {
+                const participantsObj = JSON.parse(participantsParam);
+                // Update the counts object
+                counts.adults = participantsObj.adults || 3;
+                counts.children = participantsObj.children || 0;
+                counts.rooms = participantsObj.rooms || 1;
+                
+                // Update the display
+                updateDisplay();
+            } catch (e) {
+                console.error("Error parsing participants data:", e);
+            }
+        }
+    });
+</script>

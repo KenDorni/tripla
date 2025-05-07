@@ -1,6 +1,18 @@
+:root {
+    --primary-color: #0071c2;
+    --secondary-color: #f5f5f5;
+    --accent-color: #febb02;
+    --text-color: #333;
+    --light-text: #666;
+    --border-color: #e7e7e7;
+    --border-radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
 body {
     font-family: 'Poppins', Arial, sans-serif;
-    background-color: #f0f8ff;
+    background-color: #f5f5f5;
     background-image: url('../images/preferences/1.jpg');
     background-repeat: no-repeat;
     background-size: cover;
@@ -8,19 +20,21 @@ body {
     background-attachment: fixed;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text-color);
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 50px auto;
+    padding: 0 20px;
 }
 
 .card {
     border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--border-color);
 }
 
 .card-body {
@@ -28,32 +42,36 @@ body {
 }
 
 h1 {
-    color: #007bff;
-    font-size: 2.2rem;
+    color: var(--primary-color);
+    font-size: 24px;
     margin-bottom: 20px;
     text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
 }
 
 h2 {
-    color: #007bff;
-    font-size: 1.5rem;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-size: 18px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
 hr {
     border: none;
     height: 1px;
-    background-color: #ddd;
+    background-color: var(--border-color);
     margin: 20px 0;
 }
 
 label {
     display: block;
-    margin-bottom: 15px;
-    font-weight: bold;
-    color: #555;
-    width: 100%;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 14px;
 }
 
 input[type="text"],
@@ -61,44 +79,46 @@ input[type="password"],
 input[disabled] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     box-sizing: border-box;
-    background-color: #f9f9f9;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    margin-top: 8px;
+    background-color: white;
+    font-size: 14px;
+    transition: var(--transition);
+    margin-top: 5px;
+    margin-bottom: 15px;
     display: block;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    border-color: #007bff;
+    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(0, 113, 194, 0.2);
 }
 
 input[disabled] {
-    background-color: #e9ecef;
+    background-color: var(--secondary-color);
     cursor: not-allowed;
 }
 
 input[type="button"] {
     padding: 12px 20px;
     border: none;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 6px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--transition);
     margin-top: 10px;
 }
 
 input[type="button"]:hover {
-    background-color: #0056b3;
+    background-color: #005999;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
 }
 
 #reset-password-btn {
@@ -108,32 +128,52 @@ input[type="button"]:hover {
 
 #pw-reset {
     display: block;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     padding: 20px;
-    margin-top: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    box-shadow: var(--shadow);
 }
 
 #change-password-btn {
     width: 100%;
     margin-top: 15px;
-    background-color: #0071c2;
+    background-color: var(--primary-color);
 }
 
 #change-password-btn:hover {
-    background-color: #005ea6;
+    background-color: #005999;
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-top: 10px;
+    font-size: 14px;
+    padding: 8px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.success-message {
+    color: #2ecc71;
+    margin-top: 10px;
+    font-size: 14px;
+    padding: 8px;
+    background-color: rgba(46, 204, 113, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(46, 204, 113, 0.3);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     h1 {
-        font-size: 1.8rem;
+        font-size: 20px;
     }
     
     h2 {
-        font-size: 1.3rem;
+        font-size: 16px;
     }
     
     .card-body {
@@ -142,6 +182,10 @@ input[type="button"]:hover {
 }
 
 @media (max-width: 480px) {
+    .container {
+        margin: 20px auto;
+    }
+    
     .card-body {
         padding: 15px;
     }
