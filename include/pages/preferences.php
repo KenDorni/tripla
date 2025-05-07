@@ -26,23 +26,23 @@
     <!-- Input field for specifying the number of travelers -->
      <label for="who">Who</label>
     <div class="dropdown-container">
-        <div class="dropdown-toggle" id="travelerToggle">3 Adults · 0 Children · 1 Room</div>
+        <div class="dropdown-toggle" id="travelerToggle"><?php echo $_GET['adults'] ?? "2";?> Adults · <?php echo $_GET['children'] ?? "0";?> Children · <?php echo $_GET['rooms'] ?? "1";?> Room</div>
         
         <div class="dropdown-panel" id="travelerPanel">
             <div class="counter-group">
             <span class="counter-label">Adults</span>
             <div class="counter">
                 <button onclick="updateCount('adults', -1)">−</button>
-                <span id="adultsCount">3</span>
+                <span id="adultsCount"><?php echo $_GET['adults'] ?? "2";?></span>
                 <button onclick="updateCount('adults', 1)">+</button>
             </div>
             </div>
 
             <div class="counter-group">
-            <span class="counter-label">Children</span>
+            <span class="counter-label"<>Children</span>
             <div class="counter">
                 <button onclick="updateCount('children', -1)">−</button>
-                <span id="childrenCount">0</span>
+                <span id="childrenCount"><?php echo $_GET['children'] ?? "0";?></span>
                 <button onclick="updateCount('children', 1)">+</button>
             </div>
             </div>
@@ -51,7 +51,7 @@
             <span class="counter-label">Rooms</span>
             <div class="counter">
                 <button onclick="updateCount('rooms', -1)">−</button>
-                <span id="roomsCount">1</span>
+                <span id="roomsCount"><?php echo $_GET['rooms'] ?? "1";?></span>
                 <button onclick="updateCount('rooms', 1)">+</button>
             </div>
             </div>
@@ -105,9 +105,9 @@
     const toggle = document.getElementById('travelerToggle');
     const panel = document.getElementById('travelerPanel');
     const counts = {
-        adults: 3,
-        children: 0,
-        rooms: 1
+        adults: <?php echo $_GET['adults'] ?? "1";?>,
+        children: <?php echo $_GET['children'] ?? "1";?>,
+        rooms: <?php echo $_GET['rooms'] ?? "1";?>
     };
 
     function updateDisplay() {

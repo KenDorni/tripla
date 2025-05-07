@@ -46,10 +46,10 @@
         </div>
     </div>
     <form method="get">
-        <input type="hidden" id="adultsCountGet" name="attendees['adults']" value="2">
-        <input type="hidden" id="childrenCountGet" name="attendees['children']" value="0">
-        <input type="hidden" id="roomsCountGet" name="attendees['rooms']" value="1">
         <button type="submit" id="search-button" class="search-button" name="page" value="preferences">GO</button>
+        <input type="hidden" id="adultsCountGet" name="adults" value="2">
+        <input type="hidden" id="childrenCountGet" name="children" value="0">
+        <input type="hidden" id="roomsCountGet" name="rooms" value="1">
     </form>
 </div>
 <script>
