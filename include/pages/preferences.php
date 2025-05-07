@@ -67,7 +67,6 @@ if (isset($_GET['participants']) && !empty($_GET['participants'])) {
     <!-- Eingabefeld für die Anzahl der Reisenden -->
     <label for="who">Who</label>
     <div class="dropdown-container">
-<<<<<<< HEAD
         <div class="dropdown-toggle" id="travelerToggle"><?php echo $selectedParticipants; ?></div>
         
         <div class="dropdown-panel" id="travelerPanel">
@@ -96,7 +95,6 @@ if (isset($_GET['participants']) && !empty($_GET['participants'])) {
                     <span id="roomsCount">1</span>
                     <button type="button" onclick="updateCount('rooms', 1)">+</button>
                 </div>
-=======
         <div class="dropdown-toggle" id="travelerToggle"><?php echo $_GET['adults'] ?? "2";?> Adults · <?php echo $_GET['children'] ?? "0";?> Children · <?php echo $_GET['rooms'] ?? "1";?> Room</div>
         
         <div class="dropdown-panel" id="travelerPanel">
@@ -125,7 +123,6 @@ if (isset($_GET['participants']) && !empty($_GET['participants'])) {
                 <span id="roomsCount"><?php echo $_GET['rooms'] ?? "1";?></span>
                 <button onclick="updateCount('rooms', 1)">+</button>
             </div>
->>>>>>> pages4
             </div>
 
             <button class="done-button" onclick="closeDropdown()">Done</button>

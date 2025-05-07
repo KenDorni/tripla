@@ -976,7 +976,3 @@
 </script>
 <?php
 echo (isset($_SESSION["Itinerary"]) ?? "No data");
-=======
-<?php
-echo(isset($_SESSION["Itinerary"]) ?? "No data");
->>>>>>> pages4
