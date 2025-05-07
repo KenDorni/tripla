@@ -67,6 +67,7 @@ if (isset($_GET['participants']) && !empty($_GET['participants'])) {
     <!-- Eingabefeld für die Anzahl der Reisenden -->
     <label for="who">Who</label>
     <div class="dropdown-container">
+<<<<<<< HEAD
         <div class="dropdown-toggle" id="travelerToggle"><?php echo $selectedParticipants; ?></div>
         
         <div class="dropdown-panel" id="travelerPanel">
@@ -95,6 +96,36 @@ if (isset($_GET['participants']) && !empty($_GET['participants'])) {
                     <span id="roomsCount">1</span>
                     <button type="button" onclick="updateCount('rooms', 1)">+</button>
                 </div>
+=======
+        <div class="dropdown-toggle" id="travelerToggle"><?php echo $_GET['adults'] ?? "2";?> Adults · <?php echo $_GET['children'] ?? "0";?> Children · <?php echo $_GET['rooms'] ?? "1";?> Room</div>
+        
+        <div class="dropdown-panel" id="travelerPanel">
+            <div class="counter-group">
+            <span class="counter-label">Adults</span>
+            <div class="counter">
+                <button onclick="updateCount('adults', -1)">−</button>
+                <span id="adultsCount"><?php echo $_GET['adults'] ?? "2";?></span>
+                <button onclick="updateCount('adults', 1)">+</button>
+            </div>
+            </div>
+
+            <div class="counter-group">
+            <span class="counter-label"<>Children</span>
+            <div class="counter">
+                <button onclick="updateCount('children', -1)">−</button>
+                <span id="childrenCount"><?php echo $_GET['children'] ?? "0";?></span>
+                <button onclick="updateCount('children', 1)">+</button>
+            </div>
+            </div>
+
+            <div class="counter-group">
+            <span class="counter-label">Rooms</span>
+            <div class="counter">
+                <button onclick="updateCount('rooms', -1)">−</button>
+                <span id="roomsCount"><?php echo $_GET['rooms'] ?? "1";?></span>
+                <button onclick="updateCount('rooms', 1)">+</button>
+            </div>
+>>>>>>> pages4
             </div>
 
             <button class="done-button" onclick="closeDropdown()">Done</button>
@@ -151,9 +182,9 @@ if (isset($_GET['participants']) && !empty($_GET['participants'])) {
 
     // Standardwerte für die Anzahl der Reisenden und Zimmer
     const counts = {
-        adults: 3,
-        children: 0,
-        rooms: 1
+        adults: <?php echo $_GET['adults'] ?? "1";?>,
+        children: <?php echo $_GET['children'] ?? "1";?>,
+        rooms: <?php echo $_GET['rooms'] ?? "1";?>
     };
 
     /**

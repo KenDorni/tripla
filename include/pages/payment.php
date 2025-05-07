@@ -46,6 +46,7 @@
 
 
     })
+<<<<<<< HEAD
 
     async function sendItineraryToAPI(itineraryArray) {
         for (const item of itineraryArray) {
@@ -70,4 +71,6 @@
             }
         }
     }
+=======
+>>>>>>> pages4
 </script>
