@@ -324,4 +324,80 @@
     }
 
     renderItinerary();
+
+    function updateSession() {
+        $.ajax({
+            url: "index.php",
+            method: "POST",
+            data: {
+                Itinerary: JSON.stringify(convertToStructuredFormat(<?php echo $_SESSION['user']['id'] ?? "1";?>))
+            }
+        })
+    }
+
+    function convertToStructuredFormat(fk_user_created) {
+        const output = []
+
+        // Create the main itinerary object
+        const itineraryEntry = {
+            Type: "Itinerary",
+            Value: {
+                fk_user_created: fk_user_created
+            }
+        }
+
+        output.push(itineraryEntry)
+
+        // Counter for relation keys
+        let stopIndex = 1
+        let transitIndex = 1
+
+        for (const item of itinerary) {
+            const start = item.startTime?.replace("T", " ") || null
+            const stop = item.endTime?.replace("T", " ") || null
+            const value = item.value || null
+
+            if (item.type === "stop" || item.type === "start" || item.name === "end") {
+                if (!value) continue // Skip if empty
+
+                output.push({
+                    Type: "Itinerary_Stop",
+                    Value: {
+                        fk_itinerary_includes: stopIndex,
+                        type: item.category.toLowerCase(), // Location, Stay, Activity
+                        value: value,
+                        booking_ref: null,
+                        link: null,
+                        start: start,
+                        stop: stop
+                    }
+                })
+                stopIndex++
+            }
+
+            if (item.type === "transit") {
+                if (!value) continue
+
+                output.push({
+                    Type: "Itinerary_Transit",
+                    Value: {
+                        fk_itinerary_has_assigned: transitIndex,
+                        method: item.category.toLowerCase(), // flight, train, etc.
+                        booking_ref: null,
+                        link: null,
+                        start: start,
+                        stop: stop
+                    }
+                })
+                transitIndex++
+            }
+        }
+
+        return output
+    }
+
+
+    renderItinerary()
 </script>
+<?php
+echo (isset($_SESSION["Itinerary"]) ?? "No data");

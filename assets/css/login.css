@@ -1,6 +1,18 @@
+:root {
+    --primary-color: #0071c2;
+    --secondary-color: #f5f5f5;
+    --accent-color: #febb02;
+    --text-color: #333;
+    --light-text: #666;
+    --border-color: #e7e7e7;
+    --border-radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
 body {
     font-family: 'Poppins', Arial, sans-serif;
-    background-color: #f0f8ff;
+    background-color: #f5f5f5;
     background-image: url('../images/preferences/1.jpg');
     background-repeat: no-repeat;
     background-size: cover;
@@ -8,20 +20,21 @@ body {
     background-attachment: fixed;
     margin: 0;
     padding: 0;
-    color: #333;
+    color: var(--text-color);
 }
 
 .container {
     max-width: 500px;
-    margin: 50px auto;
+    margin: 80px auto;
     padding: 0 20px;
 }
 
 form {
     background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 30px;
+    border: 1px solid var(--border-color);
 }
 
 fieldset {
@@ -31,103 +44,122 @@ fieldset {
 }
 
 legend {
-    font-size: 28px;
-    font-weight: bold;
-    color: #007bff;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
     margin-bottom: 20px;
     text-align: center;
     width: 100%;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 label {
     display: block;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 14px;
 }
 
 input[type="text"],
 input[type="password"] {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     box-sizing: border-box;
-    font-size: 16px;
-    margin-top: 8px;
-    background-color: #f9f9f9;
-    transition: all 0.3s ease;
+    font-size: 14px;
+    margin-bottom: 16px;
+    background-color: white;
+    transition: var(--transition);
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    border-color: #007bff;
+    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(0, 113, 194, 0.2);
 }
 
 input[type="submit"] {
-    background-color: #0071c2;
+    background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     padding: 12px 20px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 500;
     cursor: pointer;
     width: 100%;
     margin-top: 10px;
     margin-bottom: 20px;
-    transition: all 0.3s ease;
+    transition: var(--transition);
 }
 
 input[type="submit"]:hover {
-    background-color: #005ea6;
+    background-color: #005999;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow);
 }
 
 hr {
     border: none;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     margin: 20px 0;
 }
 
 a {
-    color: #0071c2;
+    color: var(--primary-color);
     text-decoration: none;
-    font-weight: bold;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    transition: var(--transition);
     display: block;
     text-align: center;
     margin: 10px 0;
+    font-size: 14px;
 }
 
 a:hover {
-    color: #004a80;
+    color: #005999;
     text-decoration: underline;
 }
 
 /* Error message styling */
 .error-message {
-    color: #dc3545;
+    color: #e74c3c;
     margin-top: 10px;
     font-size: 14px;
     text-align: center;
+    padding: 8px;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(231, 76, 60, 0.3);
 }
 
 /* Success message styling */
 .success-message {
-    color: #28a745;
+    color: #2ecc71;
     margin-top: 10px;
     font-size: 14px;
     text-align: center;
+    padding: 8px;
+    background-color: rgba(46, 204, 113, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(46, 204, 113, 0.3);
 }
 
 /* Responsive adjustments */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .container {
-        margin: 50px auto;
+        margin: 40px auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 20px auto;
+        padding: 0 15px;
     }
     
     form {
@@ -135,6 +167,6 @@ a:hover {
     }
     
     legend {
-        font-size: 24px;
+        font-size: 20px;
     }
 }
