@@ -81,6 +81,10 @@ if (isset($_SESSION["OTP"])){
     }
 }
 
+if (isset($_POST["Itinerary"])){
+    $_SESSION["Itinerary"] = $_POST["Itinerary"];
+}
+
 //echo "<pre>" . print_r($_SESSION, true) . "</pre>";
 
 mysqli_close($dbc);
@@ -105,6 +109,7 @@ mysqli_close($dbc);
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/<?php echo $page;?>.css">
     <!--<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
+    <script src="assets/js/main.js"></script>
     <script src="assets/js/<?php echo $page;?>.js"></script>
     <!-- map dependecies -->
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
