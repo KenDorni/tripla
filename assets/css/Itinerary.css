@@ -17,7 +17,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 30px 0;
-    border-left: 3px solid #007bff;
+    /*border-left: 3px solid #007bff;*/
     position: relative;
     margin-left: 40px;
 }
@@ -62,7 +62,7 @@ body {
 /* Ensure proper positioning for right side content */
 .right {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
     flex: 1;
     position: relative;
@@ -100,7 +100,7 @@ select:focus {
     gap: 8px;
     align-items: center;
     margin-top: 4px;
-    position: absolute;
+    /*position: absolute;*/
     right: 12px;
     top: 90px;
 }
@@ -141,18 +141,18 @@ button:hover {
     display: flex;
     align-items: center;
     margin: 5px 0 15px -45px;
-    position: relative;
+    /*position: relative;*/
     z-index: 5; /* Ensure it appears above other elements */
 }
 
 .add-section button {
     margin-right: 290px;
     font-weight: bold;
-    position: absolute;
+    /*position: absolute;*/
     right: 870px; /* Move button*/
 }
 
-.add-section::before {
+/*.add-section::before {
     content: '';
     position: absolute;
     left: 14px;
@@ -161,7 +161,7 @@ button:hover {
     background-color: #28a745;
     border-radius: 50%;
     z-index: 1;
-}
+}*/
 
 .center-line {
     position: absolute;
@@ -381,4 +381,9 @@ select {
         height: 90%;
         padding: 15px;
     }
+}
+
+#flightList div {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
 }
