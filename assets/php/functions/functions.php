@@ -1,4 +1,5 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -9,6 +10,108 @@ require 'assets/php/phpmailer/src/SMTP.php';
 require_once(__DIR__ . '/../database/db_functions.php');
 
 /**
+ * Initialize foreign key session if not exists
+ */
+function initForeignKeySession() {
+    if (!isset($_SESSION['foreign-key'])) {
+        $_SESSION['foreign-key'] = [
+            'Account' => null,
+            'Itinerary' => null,
+            'Itinerary_Stop' => null,
+            'Itinerary_Transit' => null
+        ];
+    }
+}
+
+/**
+ * Get foreign key from session
+ * @param string $type Type of the foreign key (Account, Itinerary, etc.)
+ * @param int $userId User ID to check ownership
+ * @return mixed Foreign key value or null if not found
+ * @throws Exception if type is invalid
+ */
+function getForeignKey($type, $userId = null) {
+    initForeignKeySession();
+    
+    if (!in_array($type, ['Account', 'Itinerary', 'Itinerary_Stop', 'Itinerary_Transit'])) {
+        throw new Exception("Invalid foreign key type: $type");
+    }
+    
+    $foreignKey = $_SESSION['foreign-key'][$type];
+    
+    // For Account, we don't need to check userId
+    if ($type !== 'Account' && $userId !== null && $foreignKey !== null) {
+        // Verify ownership - this would typically be done in the database
+        // but we're checking here for consistency
+        $dbc = dbConnect();
+        $query = "SELECT 1 FROM Itinerary WHERE pk_itinerary = ? AND fk_user_created = ?";
+        $result = queryStatement($dbc, $query, 'ii', $foreignKey, $userId);
+        
+        if (!$result || mysqli_num_rows($result) === 0) {
+            throw new Exception("Unauthorized access to $type");
+        }
+    }
+    
+    return $foreignKey;
+}
+
+/**
+ * Set foreign key in session
+ * @param string $type Type of the foreign key (Account, Itinerary, etc.)
+ * @param mixed $foreignKey The foreign key value
+ * @param int|null $userId User ID for ownership (null for Account)
+ * @throws Exception if type is invalid or if trying to set a foreign key that exists
+ */
+function setForeignKey($type, $foreignKey, $userId = null) {
+    initForeignKeySession();
+    
+    if (!in_array($type, ['Account', 'Itinerary', 'Itinerary_Stop', 'Itinerary_Transit'])) {
+        throw new Exception("Invalid foreign key type: $type");
+    }
+    
+    // Check if we're trying to set a foreign key that already exists
+    if ($_SESSION['foreign-key'][$type] !== null) {
+        throw new Exception("Foreign key for $type already exists");
+    }
+    
+    $_SESSION['foreign-key'][$type] = $foreignKey;
+    
+    // For non-Account types, verify ownership
+    if ($type !== 'Account' && $userId !== null) {
+        $dbc = dbConnect();
+        $query = "SELECT 1 FROM Itinerary WHERE pk_itinerary = ? AND fk_user_created = ?";
+        $result = queryStatement($dbc, $query, 'ii', $foreignKey, $userId);
+        
+        if (!$result || mysqli_num_rows($result) === 0) {
+            // Remove the foreign key if ownership verification fails
+            $_SESSION['foreign-key'][$type] = null;
+            throw new Exception("Unauthorized to set foreign key for $type");
+        }
+    }
+}
+
+/**
+ * Remove foreign key from session
+ * @param string $type Type of the foreign key (Account, Itinerary, etc.)
+ * @return bool Returns true if foreign key was successfully removed, false if it didn't exist
+ * @throws Exception if type is invalid
+ */
+function removeForeignKey($type) {
+    initForeignKeySession();
+    
+    if (!in_array($type, ['Account', 'Itinerary', 'Itinerary_Stop', 'Itinerary_Transit'])) {
+        throw new Exception("Invalid foreign key type: $type");
+    }
+    
+    if ($_SESSION['foreign-key'][$type] === null) {
+        return false; // Foreign key didn't exist
+    }
+    
+    $_SESSION['foreign-key'][$type] = null;
+    return true; // Successfully removed
+}
+
+/**
  * Check whether the username and password provided match
  * @param $dbc
  * @param $user
@@ -17,7 +120,7 @@ require_once(__DIR__ . '/../database/db_functions.php');
  */
 function verifyUser($dbc, $user, $pw): bool
 {
-    $query = "SELECT email_address, password FROM user WHERE email_address = ? ";
+    $query = "SELECT email_address, password FROM User WHERE email_address = ? ";
     $result = queryStatement($dbc, $query, "s", $user);
 
     $row = mysqli_fetch_assoc($result);
@@ -35,7 +138,7 @@ function verifyUser($dbc, $user, $pw): bool
  */
 function userExists($dbc, $user): bool
 {
-    $result = queryStatement($dbc, "SELECT email_address FROM user WHERE email_address = ?", "s", $user);
+    $result = queryStatement($dbc, "SELECT email_address FROM User WHERE email_address = ?", "s", $user);
 
     $row = mysqli_fetch_assoc($result);
     mysqli_free_result($result);
@@ -79,7 +182,7 @@ function login($dbc, string $emailAddress, string $password): bool
     }
 
     // Query to find the user by email
-    $query = "SELECT pk_user, email_address, username, password FROM user WHERE email_address = ?";
+    $query = "SELECT pk_user, email_address, username, password FROM `User` WHERE email_address = ?";
     try {
         $result = queryStatement($dbc, $query, "s", $emailAddress);
         if ($result && mysqli_num_rows($result) === 1) {
@@ -112,7 +215,7 @@ function login($dbc, string $emailAddress, string $password): bool
 
 function register($dbc, $emailAddress, $pw, $username)
 {
-    queryStatement($dbc, "INSERT INTO tripla.user(email_address, password, username) VALUES (?,?,?)", "sss", $emailAddress, password_hash($pw, PASSWORD_DEFAULT), $username);
+    queryStatement($dbc, "INSERT INTO User(email_address, password, username) VALUES (?,?,?)", "sss", $emailAddress, password_hash($pw, PASSWORD_DEFAULT), $username);
 
     //confirmation message
     $message = "Thank you for signing up to Tripla";
@@ -192,12 +295,12 @@ function copyToClipboard() {
     try {
         // Server settings
         $mail->isSMTP();                        // Set mailer to use SMTP
-        $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server
-        $mail->SMTPAuth   = true;               // Enable SMTP authentication
-        $mail->Username   = 'tripla.welcome@gmail.com';   // SMTP username
-        $mail->Password   = 'Aaa123456+-';    // SMTP password
+        $mail->Host = 'smtp.gmail.com'; // Set the SMTP server
+        $mail->SMTPAuth = true;               // Enable SMTP authentication
+        $mail->Username = 'tripla.welcome@gmail.com';   // SMTP username
+        $mail->Password = 'Aaa123456+-';    // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;    // Use 'tls' for Port 587 or 'ssl' for 465
-        $mail->Port       = 465;              // TCP port to connect to
+        $mail->Port = 465;              // TCP port to connect to
 
         // Recipients
         $mail->setFrom('tripla.welcome@gmail.com', 'Tripla');
@@ -206,7 +309,7 @@ function copyToClipboard() {
         // Content
         $mail->isHTML(true);                    // Set email format to HTML
         $mail->Subject = 'Welcome to Tripla - Account verification';
-        $mail->Body    = $message;
+        $mail->Body = $message;
         //$mail->AltBody = 'This is a test email sent using PHPMailer (plain text).';
 
         $mail->send();
@@ -230,18 +333,19 @@ function copyToClipboard() {
 //=======
 }
 
-function send_mail($receiver, $message){
+function send_mail($receiver, $message)
+{
     $mail = new PHPMailer(true);
 
     try {
         // Server settings
         $mail->isSMTP();                        // Set mailer to use SMTP
-        $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server
-        $mail->SMTPAuth   = true;               // Enable SMTP authentication
-        $mail->Username   = 'tripla.welcome@gmail.com';   // SMTP username
-        $mail->Password   = 'hucr dray bqwm oswt';    // SMTP password
+        $mail->Host = 'smtp.gmail.com'; // Set the SMTP server
+        $mail->SMTPAuth = true;               // Enable SMTP authentication
+        $mail->Username = 'tripla.welcome@gmail.com';   // SMTP username
+        $mail->Password = 'hucr dray bqwm oswt';    // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;    // Use 'tls' for Port 587 or 'ssl' for 465
-        $mail->Port       = 465;              // TCP port to connect to
+        $mail->Port = 465;              // TCP port to connect to
 
         // Recipients
         $mail->setFrom('tripla.welcome@gmail.com', 'Tripla');
@@ -250,7 +354,7 @@ function send_mail($receiver, $message){
         // Content
         $mail->isHTML(true);                    // Set email format to HTML
         $mail->Subject = 'Welcome to Tripla - Account verification';
-        $mail->Body    = $message;
+        $mail->Body = $message;
         //$mail->AltBody = 'This is a test email sent using PHPMailer (plain text).';
 
         $mail->send();

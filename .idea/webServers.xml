@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="098320db-c7fd-4385-bbd9-5800dd42db6e" name="foxi" url="http://dorke108.foxi.lu">
+        <fileTransfer accessType="SFTP" host="foxi.am.lu" port="22" sshConfigId="d63bacf6-896f-41fb-856f-39d1563694ee" sshConfig="dorke108@foxi.am.lu:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

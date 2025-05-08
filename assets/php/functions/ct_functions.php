@@ -26,6 +26,9 @@ function createAccount($data) {
     
     $userId = mysqli_insert_id($dbc);
     
+    // Store the foreign key in session
+    setForeignKey('Account', $userId);
+    
     // If there's cookie data, transfer it to database
     if (isset($_COOKIE['tripla_data'])) {
         $cookieData = json_decode($_COOKIE['tripla_data'], true);
@@ -51,6 +54,10 @@ function createItinerary($data, $userId, $saveToDb) {
         }
         
         $itineraryId = mysqli_insert_id($dbc);
+        
+        // Store the foreign key in session
+        setForeignKey('Itinerary', $itineraryId);
+        
         return ['itinerary_id' => $itineraryId];
     } else {
         return ['itinerary_id' => 'temp_' . uniqid()];
@@ -87,7 +94,12 @@ function createItineraryStop($data, $userId, $saveToDb) {
             throw new Exception("Failed to create itinerary stop");
         }
         
-        return ['stop_id' => mysqli_insert_id($dbc)];
+        $stopId = mysqli_insert_id($dbc);
+        
+        // Store the foreign key in session
+        setForeignKey('Itinerary_Stop', $stopId);
+        
+        return ['stop_id' => $stopId];
     } else {
         return ['stop_id' => 'temp_' . uniqid()];
     }
@@ -122,7 +134,12 @@ function createItineraryTransit($data, $userId, $saveToDb) {
             throw new Exception("Failed to create itinerary transit");
         }
         
-        return ['transit_id' => mysqli_insert_id($dbc)];
+        $transitId = mysqli_insert_id($dbc);
+        
+        // Store the foreign key in session
+        setForeignKey('Itinerary_Transit', $transitId);
+        
+        return ['transit_id' => $transitId];
     } else {
         return ['transit_id' => 'temp_' . uniqid()];
     }

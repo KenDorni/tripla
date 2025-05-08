@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Your Travel Itinerary</h1>
-    <div id="timeline" class="timeline"></div>
+    <div id="timeline" class="timeline" onchange="updateSession()"></div>
 </div>
 
 <div id="mapModal" class="overlay">
@@ -19,7 +19,9 @@
     </div>
     <div id="transitContent" style="overflow-y: auto; height: calc(100% - 50px); padding: 10px;"></div>
 </div>
-
+<form method="get">
+    <button class="normal-button" type="submit" onclick="updateSession()" name="page" value="payment">Pay Now</button>
+</form>
 <script>
     let itinerary = [
         {
@@ -41,17 +43,17 @@
             endTime: "",
             before: 0
         }
-    ];
+    ]
 
     // The rest of your JavaScript remains unchanged
     function isEditable() {
-        const start = itinerary.find(i => i.name === "start" && i.value);
-        const end = itinerary.find(i => i.name === "end" && i.value);
-        return start && end;
+        const start = itinerary.find(i => i.name === "start" && i.value)
+        const end = itinerary.find(i => i.name === "end" && i.value)
+        return start && end
     }
 
     function addStopBefore(index) {
-        const stopId = Date.now();
+        const stopId = Date.now()
         const stop = {
             name: `stop${stopId}`,
             type: "stop",
@@ -60,7 +62,7 @@
             startTime: "",
             endTime: "",
             before: null
-        };
+        }
         const transit = {
             name: `transit${stopId}`,
             type: "transit",
@@ -69,87 +71,87 @@
             startTime: "",
             endTime: "",
             before: null
-        };
-        itinerary.splice(index, 0, transit, stop);
-        rebuildBefore();
+        }
+        itinerary.splice(index, 0, transit, stop)
+        rebuildBefore()
     }
 
     function removeItem(name) {
-        const item = itinerary.find(i => i.name === name);
-        if (item?.type === "transit") return;
-        const idx = itinerary.findIndex(i => i.name === name);
-        const prevTransit = itinerary[idx - 1];
-        if (prevTransit?.type === "transit") itinerary.splice(idx - 1, 2);
-        else itinerary.splice(idx, 1);
-        rebuildBefore();
+        const item = itinerary.find(i => i.name === name)
+        if (item?.type === "transit") return
+        const idx = itinerary.findIndex(i => i.name === name)
+        const prevTransit = itinerary[idx - 1]
+        if (prevTransit?.type === "transit") itinerary.splice(idx - 1, 2)
+        else itinerary.splice(idx, 1)
+        rebuildBefore()
     }
 
     function rebuildBefore() {
-        const start = itinerary.find(i => i.type === "start");
-        const end = itinerary.find(i => i.name === "end");
-        const stops = itinerary.filter(i => i.type === "stop" && i.name !== "end");
-        const transits = itinerary.filter(i => i.type === "transit");
+        const start = itinerary.find(i => i.type === "start")
+        const end = itinerary.find(i => i.name === "end")
+        const stops = itinerary.filter(i => i.type === "stop" && i.name !== "end")
+        const transits = itinerary.filter(i => i.type === "transit")
 
-        const ordered = [start];
+        const ordered = [start]
         for (let i = 0; i < stops.length; i++) {
-            const stop = stops[i];
-            const transit = transits.find(t => itinerary.indexOf(t) < itinerary.indexOf(stop));
-            if (transit) ordered.push(transit);
-            ordered.push(stop);
+            const stop = stops[i]
+            const transit = transits.find(t => itinerary.indexOf(t) < itinerary.indexOf(stop))
+            if (transit) ordered.push(transit)
+            ordered.push(stop)
         }
-        const lastTransit = transits.find(t => itinerary.indexOf(t) < itinerary.indexOf(end));
-        if (lastTransit) ordered.push(lastTransit);
-        ordered.push(end);
+        const lastTransit = transits.find(t => itinerary.indexOf(t) < itinerary.indexOf(end))
+        if (lastTransit) ordered.push(lastTransit)
+        ordered.push(end)
 
         ordered.forEach((item, i) => {
-            item.before = i === 0 ? null : i - 1;
-        });
+            item.before = i === 0 ? null : i - 1
+        })
 
-        itinerary = ordered;
-        renderItinerary();
+        itinerary = ordered
+        renderItinerary()
     }
 
     function renderItinerary() {
-        const container = document.getElementById("timeline");
-        container.innerHTML = "";
+        const container = document.getElementById("timeline")
+        container.innerHTML = ""
 
-        const line = document.createElement("div");
-        line.className = "center-line";
-        container.appendChild(line);
+        const line = document.createElement("div")
+        line.className = "center-line"
+        container.appendChild(line)
 
         itinerary.forEach((item, index) => {
             if (item.type === "transit" && isEditable()) {
-                const addRow = document.createElement("div");
-                addRow.className = "add-section";
-                const btn = document.createElement("button");
-                btn.textContent = "+";
-                btn.onclick = () => addStopBefore(index + 1);
-                addRow.appendChild(btn);
-                container.appendChild(addRow);
+                const addRow = document.createElement("div")
+                addRow.className = "add-section"
+                const btn = document.createElement("button")
+                btn.textContent = "+"
+                btn.onclick = () => addStopBefore(index + 1)
+                addRow.appendChild(btn)
+                container.appendChild(addRow)
             }
 
-            const row = document.createElement("div");
-            row.className = "entry";
-            row.dataset.name = item.name;
+            const row = document.createElement("div")
+            row.className = "entry"
+            row.dataset.name = item.name
 
-            const left = document.createElement("div");
-            left.className = "left";
+            const left = document.createElement("div")
+            left.className = "left"
             left.innerHTML = `
             <input type="datetime-local" value="${item.startTime}" onchange="updateTime('${item.name}', this.value, 'startTime')">
             <input type="datetime-local" value="${item.endTime || ''}" onchange="updateTime('${item.name}', this.value, 'endTime')">
-        `;
+        `
 
-            const controls = document.createElement("div");
-            controls.className = "controls";
+            const controls = document.createElement("div")
+            controls.className = "controls"
             if (item.name !== "start" && item.name !== "end" && isEditable() && item.type !== "transit") {
-                const removeBtn = document.createElement("button");
-                removeBtn.textContent = "–";
-                removeBtn.onclick = () => removeItem(item.name);
-                controls.appendChild(removeBtn);
+                const removeBtn = document.createElement("button")
+                removeBtn.textContent = "–"
+                removeBtn.onclick = () => removeItem(item.name)
+                controls.appendChild(removeBtn)
             }
 
-            const right = document.createElement("div");
-            right.className = "right";
+            const right = document.createElement("div")
+            right.className = "right"
 
             /*right.innerHTML = `
             <input class="location-search" placeholder="Click to pick location" readonly onclick="openMap('${item.name}')" value="${item.value}">
@@ -167,129 +169,129 @@
             </select>`}
         `;*/
 
-            let inputHTML = `<input class="location-search" placeholder="Click to pick..." readonly onclick="openHandler('${item.name}', '${item.type}', '${item.category}')" value="${item.value}">`;
+            let inputHTML = `<input class="location-search" placeholder="Click to pick..." readonly onclick="openHandler('${item.name}', '${item.type}', '${item.category}')" value="${item.value}">`
 
-            let categoryOptions = '';
+            let categoryOptions = ''
             if (item.type === 'transit') {
-                categoryOptions = ['Flight', 'Train', 'Bus', 'Taxi'];
+                categoryOptions = ['Flight', 'Train', 'Bus', 'Taxi']
             } else {
-                categoryOptions = ['Location', 'Stay', 'Activity'];
+                categoryOptions = ['Location', 'Stay', 'Activity']
             }
             right.innerHTML = inputHTML + `
         <select onchange="updateCategory('${item.name}', this.value)">
             ${categoryOptions.map(opt => `<option ${item.category === opt ? 'selected' : ''}>${opt}</option>`).join('')}
-        </select>`;
+        </select>`
 
 
-            right.appendChild(controls);
-            row.appendChild(left);
-            row.appendChild(right);
-            container.appendChild(row);
-        });
+            right.appendChild(controls)
+            row.appendChild(left)
+            row.appendChild(right)
+            container.appendChild(row)
+        })
     }
 
     function updateTime(name, value, field) {
-        const item = itinerary.find(i => i.name === name);
-        if (item) item[field] = value;
+        const item = itinerary.find(i => i.name === name)
+        if (item) item[field] = value
     }
 
     function updateCategory(name, value) {
-        const item = itinerary.find(i => i.name === name);
-        if (item) item.category = value;
+        const item = itinerary.find(i => i.name === name)
+        if (item) item.category = value
     }
 
     function openHandler(name, type, category) {
         if (type === 'transit') {
-            openTransitOverlay(name);
+            openTransitOverlay(name)
         } else if (category === 'Location') {
-            openMap(name);
+            openMap(name)
         } else if (category === 'Stay') {
-            alert(`Search hotels for ${name} using SerpAPI`);
+            alert(`Search hotels for ${name} using SerpAPI`)
         } else if (category === 'Activity') {
-            alert(`Search activities for ${name}`);
+            alert(`Search activities for ${name}`)
         }
     }
 
 
-    let map;
-    let marker;
-    let selectedInputName = null;
+    let map
+    let marker
+    let selectedInputName = null
 
     function openMap(name) {
-        selectedInputName = name;
-        const modal = document.getElementById("mapModal");
-        modal.style.display = "block";
+        selectedInputName = name
+        const modal = document.getElementById("mapModal")
+        modal.style.display = "block"
 
         if (!map) {
-            map = L.map('map').setView([48.8566, 2.3522], 5); // Default center: Paris
+            map = L.map('map').setView([48.8566, 2.3522], 5) // Default center: Paris
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
+            }).addTo(map)
 
             map.on('click', function (e) {
-                if (marker) marker.remove();
-                marker = L.marker(e.latlng).addTo(map);
-            });
+                if (marker) marker.remove()
+                marker = L.marker(e.latlng).addTo(map)
+            })
         }
 
         document.getElementById("mapSearchInput").oninput = async function () {
-            const query = this.value;
-            const results = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`).then(res => res.json());
-            const suggestions = document.getElementById("searchSuggestions");
-            suggestions.innerHTML = "";
+            const query = this.value
+            const results = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`).then(res => res.json())
+            const suggestions = document.getElementById("searchSuggestions")
+            suggestions.innerHTML = ""
 
             results.slice(0, 5).forEach(loc => {
-                const div = document.createElement("div");
-                div.textContent = loc.display_name;
+                const div = document.createElement("div")
+                div.textContent = loc.display_name
                 div.onclick = () => {
-                    if (marker) marker.remove();
-                    const latlng = [parseFloat(loc.lat), parseFloat(loc.lon)];
-                    map.setView(latlng, 13);
-                    marker = L.marker(latlng).addTo(map);
-                    const item = itinerary.find(i => i.name === selectedInputName);
-                    if (item) item.value = loc.display_name;
-                    closeMapModal();
-                    renderItinerary();
-                };
-                suggestions.appendChild(div);
-            });
-        };
+                    if (marker) marker.remove()
+                    const latlng = [parseFloat(loc.lat), parseFloat(loc.lon)]
+                    map.setView(latlng, 13)
+                    marker = L.marker(latlng).addTo(map)
+                    const item = itinerary.find(i => i.name === selectedInputName)
+                    if (item) item.value = loc.display_name
+                    closeMapModal()
+                    renderItinerary()
+                }
+                suggestions.appendChild(div)
+            })
+        }
     }
 
     function openTransitOverlay(transitName) {
-        const index = itinerary.findIndex(i => i.name === transitName);
-        const from = findNearestLocation(index, -1);
-        const to = findNearestLocation(index, 1);
+        const index = itinerary.findIndex(i => i.name === transitName)
+        const from = findNearestLocation(index, -1)
+        const to = findNearestLocation(index, 1)
 
         if (!from || !to) {
-            alert("Missing nearby stops.");
-            return;
+            alert("Missing nearby stops.")
+            return
         }
 
-        const apiKey = "86940468db8a3e69a0249a1cde207a1d556634e25398ec8ff99bad04a7939943"; // Replace with your SerpAPI key
-        const url = `https://serpapi.com/search.json?engine=google_maps_directions&origin=${encodeURIComponent(from.value)}&destination=${encodeURIComponent(to.value)}&mode=transit&api_key=${apiKey}`;
+        const apiKey = "86940468db8a3e69a0249a1cde207a1d556634e25398ec8ff99bad04a7939943" // Replace with your SerpAPI key
+        const url = `https://serpapi.com/search.json?engine=google_maps_directions&origin=${encodeURIComponent(from.value)}&destination=${encodeURIComponent(to.value)}&mode=transit&api_key=${apiKey}`
 
         fetch(url, {mode: 'no-cors'})
             .then(res => res.json())
             .then(data => {
-                const steps = data?.directions_routes?.[0]?.legs?.[0]?.steps;
+                const steps = data?.directions_routes?.[0]?.legs?.[0]?.steps
                 if (!steps) {
-                    alert("No route found.");
-                    return;
+                    alert("No route found.")
+                    return
                 }
 
-                const directions = steps.map(s => `${s.travel_mode}: ${s.instructions}`).join('<br>');
-                showOverlayPopup(`Transit from <b>${from.value}</b> to <b>${to.value}</b><hr>${directions}`);
+                const directions = steps.map(s => `${s.travel_mode}: ${s.instructions}`).join('<br>')
+                showOverlayPopup(`Transit from <b>${from.value}</b> to <b>${to.value}</b><hr>${directions}`)
             })
             .catch(err => {
-                console.error(err);
-                alert("Failed to fetch directions.");
-            });
+                console.error(err)
+                alert("Failed to fetch directions.")
+            })
     }
 
     function showOverlayPopup(html) {
-        document.getElementById("transitContent").innerHTML = html;
-        document.getElementById("transitOverlay").style.display = "block";
+        document.getElementById("transitContent").innerHTML = html
+        document.getElementById("transitOverlay").style.display = "block"
     }
 
     /*function findNearestLocation(index, direction) {
@@ -305,23 +307,35 @@
     }*/
 
     function findNearestLocation(index, direction) {
-        let i = index + direction;
+        let i = index + direction
         while (i >= 0 && i < itinerary.length) {
             if (["start", "stop"].includes(itinerary[i].type)) {
-                return itinerary[i];
+                return itinerary[i]
             }
-            i += direction;
+            i += direction
         }
-        return null;
+        return null
     }
 
     function closeDirectionsModal() {
-        document.getElementById("directionsModal").style.display = "none";
+        document.getElementById("directionsModal").style.display = "none"
     }
 
     function closeMapModal() {
-        document.getElementById("mapModal").style.display = "none";
+        document.getElementById("mapModal").style.display = "none"
     }
 
-    renderItinerary();
+    function updateSession() {
+        $.ajax({
+            url: "index.php",
+            method: "POST",
+            data: {
+                Itinerary: JSON.stringify(itinerary)
+            }
+        })
+    }
+
+    renderItinerary()
 </script>
+<?php
+//echo (isset($_SESSION["Itinerary"]) ?? "No data");

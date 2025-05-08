@@ -13,6 +13,12 @@ function getAccount($filter, $userId) {
         throw new Exception("Unauthorized access");
     }
 
+    // Check if we have the foreign key in session
+    $accountFk = getForeignKey('Account', $userId);
+    if ($accountFk && $accountFk !== $filter['pk_user']) {
+        throw new Exception("Account foreign key mismatch");
+    }
+
     $query = "SELECT pk_user, email_address, username FROM User WHERE pk_user = ?";
     $result = queryStatement($dbc, $query, 'i', $filter['pk_user']);
     
@@ -27,6 +33,13 @@ function getAccount($filter, $userId) {
 function getItinerary($filter, $userId, $fromDatabase) {
     if ($fromDatabase) {
         $dbc = dbConnect();
+        
+        // Check if we have the foreign key in session
+        $itineraryFk = getForeignKey('Itinerary', $userId);
+        if ($itineraryFk && isset($filter['pk_itinerary']) && $itineraryFk !== $filter['pk_itinerary']) {
+            throw new Exception("Itinerary foreign key mismatch");
+        }
+        
         $query = "SELECT * FROM Itinerary WHERE fk_user_created = ?";
         $params = [$userId];
         $types = 'i';
@@ -47,7 +60,6 @@ function getItinerary($filter, $userId, $fromDatabase) {
         return fetchAllFields($result);
     }
     
-    // Return empty array if not from DB (cookie data will be merged in read.php)
     return [];
 }
 
@@ -67,11 +79,16 @@ function getItineraryStop($filter, $userId, $fromDatabase) {
             }
         }
         
+        // Check if we have the foreign key in session
+        $stopFk = getForeignKey('Itinerary_Stop', $userId);
+        if ($stopFk && isset($filter['pk_Itinerary_Stop']) && $stopFk !== $filter['pk_Itinerary_Stop']) {
+            throw new Exception("Itinerary stop foreign key mismatch");
+        }
+        
         $query = "SELECT * FROM Itinerary_Stop WHERE 1=1";
         $params = [];
         $types = '';
         
-        // Build query dynamically based on filters
         foreach ($filter as $field => $value) {
             if (in_array($field, ['pk_Itinerary_Stop', 'fk_itinerary_includes', 'type'])) {
                 $query .= " AND $field = ?";
@@ -106,6 +123,12 @@ function getItineraryTransit($filter, $userId, $fromDatabase) {
             if (!$check || mysqli_num_rows($check) === 0) {
                 throw new Exception("Unauthorized access to itinerary");
             }
+        }
+        
+        // Check if we have the foreign key in session
+        $transitFk = getForeignKey('Itinerary_Transit', $userId);
+        if ($transitFk && isset($filter['pk_itinerary_transit']) && $transitFk !== $filter['pk_itinerary_transit']) {
+            throw new Exception("Itinerary transit foreign key mismatch");
         }
         
         $query = "SELECT * FROM Itinerary_Transit WHERE 1=1";

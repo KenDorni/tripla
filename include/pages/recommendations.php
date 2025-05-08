@@ -1,52 +1,60 @@
-<style>
-    /*body { font-family: Arial; padding: 20px; }*/
-    .hotel {     margin-bottom: 20px;
-        box-sizing: border-box;
-        width: 150px;
-        display: inline-table;}
-    .hotel h3 { margin: 0; }
-</style>
-<h1>Top Hotels in Luxembourg</h1>
+<link rel="stylesheet" href="assets/css/recommendations.css">
+
+<div class="container">
+    <h1>Top Hotels in Luxembourg</h1>
+    
+    <div id="recommended-hotels">
+        <!-- Hotels will be loaded here -->
+    </div>
+    
+    <h1>Recommended Activities</h1>
+    <div id="recommended-activity">
+        <!-- Activities will be loaded here -->
+    </div>
+    
+    <h1>Popular Locations</h1>
+    <div id="recommended-locations">
+        <!-- Locations will be loaded here -->
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
-        $('#recommended-hotels').html('Loading...');
+        $('#recommended-hotels').html('<div class="loading">Loading...</div>');
+        
         $.ajax({
             url: 'assets/php/api/get_hotels.php',
             method: 'GET',
             success: function (data) {
-                console.log(data)
-                const hotels = data//JSON.parse(data);
-
+                const hotels = data;
+                
                 let html = '';
-                if (hotels.length > 0) {
+                if (hotels && hotels.length > 0) {
                     hotels.forEach(function (hotel) {
                         html += `
-                <div class="hotel">
-                  <h3>${hotel.title}</h3>
-                  <img src="${hotel.image}">
-                  <p>Rating: ${hotel.rating} (${hotel.reviews} reviews)</p>
-                  <p>Address: ${hotel.address}</p>
-                </div>
-              `;
+                        <div class="hotel">
+                            <img src="${hotel.image || 'assets/images/hotel-placeholder.jpg'}" alt="${hotel.title}">
+                            <div class="hotel-content">
+                                <h3>${hotel.title}</h3>
+                                <div class="rating">
+                                    <span class="rating-value">${hotel.rating}</span>
+                                    <span class="reviews">${hotel.reviews} reviews</span>
+                                </div>
+                                <div class="address">${hotel.address}</div>
+                            </div>
+                        </div>`;
                     });
                 } else {
-                    html = 'No hotels found.';
+                    html = '<div class="no-data">No hotels found.</div>';
                 }
+                
                 $('#recommended-hotels').html(html);
             },
             error: function () {
-                $('#recommended-hotels').html('Failed to load hotel data.');
+                $('#recommended-hotels').html('<div class="error">Failed to load hotel data.</div>');
             }
         });
-    })
+        
+        // You can add similar AJAX calls for activities and locations
+    });
 </script>
-<div id="recommended-hotels">
-
-</div>
-<div id="recommended-activity">
-
-</div>
-<div id="recommended-locations">
-
-</div>
-<?php

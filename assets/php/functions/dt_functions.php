@@ -21,6 +21,12 @@ function deleteAccount($data, $userId) {
         session_destroy();
     }
     
+    // Remove all foreign keys since account is being deleted
+    removeForeignKey('Account');
+    removeForeignKey('Itinerary');
+    removeForeignKey('Itinerary_Stop');
+    removeForeignKey('Itinerary_Transit');
+    
     return ['affected_rows' => mysqli_affected_rows($dbc)];
 }
 
@@ -47,6 +53,11 @@ function deleteItinerary($data, $userId, $inDatabase) {
         if (!$result) {
             throw new Exception("Itinerary deletion failed");
         }
+        
+        // Remove related foreign keys
+        removeForeignKey('Itinerary');
+        removeForeignKey('Itinerary_Stop');
+        removeForeignKey('Itinerary_Transit');
         
         return ['affected_rows' => mysqli_affected_rows($dbc)];
     }
@@ -89,6 +100,9 @@ function deleteItineraryStop($data, $userId, $inDatabase) {
             throw new Exception("Stop deletion failed");
         }
         
+        // Remove the stop foreign key
+        removeForeignKey('Itinerary_Stop');
+        
         return ['affected_rows' => mysqli_affected_rows($dbc)];
     }
     
@@ -129,6 +143,9 @@ function deleteItineraryTransit($data, $userId, $inDatabase) {
         if (!$result) {
             throw new Exception("Transit deletion failed");
         }
+        
+        // Remove the transit foreign key
+        removeForeignKey('Itinerary_Transit');
         
         return ['affected_rows' => mysqli_affected_rows($dbc)];
     }
