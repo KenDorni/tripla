@@ -1,4 +1,3 @@
-<body>
     <!-- Header -->
     <header>
         <div class="header-container">
@@ -44,5 +43,3 @@
             <h1 class="slogan">Explore, Enjoy, Ease up</h1>
         </div>
     </section>
-</body>
-</html>
