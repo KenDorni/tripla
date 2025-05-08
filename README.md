@@ -107,7 +107,6 @@ To contribute:
 * Kenneth Dornseiffer - [dorke108@school.lu](mailto:dorke108@school.lu)
 * Thibaut Friederici - [frith033@school.lu](mailto:frith033@school.lu)
 * Tony Wang - [wanto443@school.lu](mailto:wanto443@school.lu)
-* Raphael Scherer - [schra239@school.lu](mailto:schra239@school.lu)
 
 Project Link: [https://github.com/KenDorni/tripla](https://github.com/KenDorni/tripla)
 
