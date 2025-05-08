@@ -19,7 +19,7 @@
     </div>
     <div id="transitContent" style="overflow-y: auto; height: calc(100% - 50px); padding: 10px;"></div>
 </div>
-<!--<button onclick="updateSession()">Save Itinerary</button>-->
+<button class="normal-button" type="submit" onclick="updateSession()" name="page" value="payment">Pay Now</button>
 <script>
     let itinerary = [
         {

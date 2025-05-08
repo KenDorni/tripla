@@ -3,8 +3,6 @@
     const itinerary = JSON.parse(<?php echo $_SESSION["Itinerary"]; ?>)
 
     $(document).ready(function () {
-
-
         $.ajax({
             url: "assets/php/index.php",
             method: "POST",
@@ -19,34 +17,24 @@
 
                 let stops = function (itinerary_id){
 
-                    return
                 }
 
-                stops.each(function () {
+                stops.each(function (stop) {
                     $.ajax({
                         url: "assets/php/index.php",
                         method: "POST",
-                        data: {
-                            Type: "Itinerary_Stop",
-                            Value: {
-                                fk_itinerary_includes: itinerary_id,
-                                type: "hotel",
-                                value: "Grand Hotel",
-                                booking_ref: "HOTEL12345",
-                                link: "https://example.com/booking/HOTEL12345",
-                                start: "2023-12-15 14:00:00",
-                                stop: "2023-12-20 11:00:00"
-                            }
+                        data: stop
                         }
                     })
                 })
+
+
 
             }
         })
 
 
     })
-<<<<<<< HEAD
 
     async function sendItineraryToAPI(itineraryArray) {
         for (const item of itineraryArray) {
@@ -71,6 +59,5 @@
             }
         }
     }
-=======
->>>>>>> pages4
+
 </script>
