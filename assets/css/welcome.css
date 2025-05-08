@@ -370,12 +370,12 @@ select:focus, input[type="text"]:focus {
         padding: 20px;
         margin: 20px;
     }
-    
+
     .form-row {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .search-button {
         padding: 12px;
     }
@@ -406,4 +406,39 @@ select:focus, input[type="text"]:focus {
 /* Date range styling */
 .date-range-container {
     width: 100%;
+}
+
+.date-inputs {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: white;
+    height: 48px;
+}
+
+.date-input {
+    flex: 1;
+}
+
+.date-input input {
+    border: none;
+    height: 48px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    background: transparent;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.date-input input:focus {
+    outline: none;
+}
+
+.date-separator {
+    padding: 0 8px;
+    color: #888;
+    font-weight: bold;
 }
