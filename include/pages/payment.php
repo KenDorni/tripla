@@ -1,39 +1,34 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<h1>Payment Placeholder</h1>
+<button type="submit" id="payandsave">Pay & Save</button>
 <script>
     const itinerary = JSON.parse(<?php echo $_SESSION["Itinerary"]; ?>)
 
     $(document).ready(function () {
-        $.ajax({
-            url: "assets/php/index.php",
-            method: "POST",
-            data: {
-                Type: "Itinerary",
-                Value: {
-                    fk_user_created": 1
-                }
-            },
-            success: function (response){
-                let itinerary_id = response['itinerary_id'];
-
-                let stops = function (itinerary_id){
-
-                }
-
-                stops.each(function (stop) {
-                    $.ajax({
-                        url: "assets/php/index.php",
-                        method: "POST",
-                        data: stop
+        $("payandsave").click(function (){
+            $.ajax({
+                url: "assets/php/index.php",
+                method: "POST",
+                data: {
+                    Type: "Itinerary",
+                    Value: {
+                        fk_user_created": 1
+                    }
+                },
+                success: function (response){
+                    let itinerary_id = response['itinerary_id']
+                    itinerary.each(function (item) {
+                        $.ajax({
+                            url: "assets/php/index.php",
+                            method: "POST",
+                            data: item
                         }
                     })
                 })
 
-
-
-            }
+        }
         })
-
-
+        })
     })
 
     async function sendItineraryToAPI(itineraryArray) {
@@ -61,3 +56,5 @@
     }
 
 </script>
+<?php
+echo $_SESSION["Itinerary"];

@@ -17,11 +17,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 30px 0;
-<<<<<<< HEAD
     /* border-left: 3px solid #007bff; */
-=======
-    /*border-left: 3px solid #007bff;*/
->>>>>>> pages4
     position: relative;
     margin-left: 40px;
 }
@@ -74,7 +70,7 @@ body {
 }
 
 /* Input styling */
-input[type="datetime-local"], 
+input[type="datetime-local"],
 input[type="text"],
 select {
     padding: 10px;
@@ -84,7 +80,7 @@ select {
     transition: all 0.3s ease;
 }
 
-input[type="datetime-local"]:focus, 
+input[type="datetime-local"]:focus,
 input[type="text"]:focus,
 select:focus {
     border-color: #007bff;
@@ -108,7 +104,6 @@ select:focus {
     z-index: 5;
     display: flex;
     gap: 8px;
-<<<<<<< HEAD
 }
 
 /* Make controls buttons look similar to add button */
@@ -121,13 +116,6 @@ select:focus {
     font-size: 16px;
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-=======
-    align-items: center;
-    margin-top: 4px;
-    /*position: absolute;*/
-    right: 12px;
-    top: 90px;
->>>>>>> pages4
 }
 
 /* Make the buttons more visible */
@@ -166,7 +154,7 @@ button:hover {
     display: flex;
     align-items: center;
     margin: 5px 0 15px -45px;
-    /*position: relative;*/
+    position: relative;
     z-index: 5; /* Ensure it appears above other elements */
 }
 
@@ -174,11 +162,11 @@ button:hover {
     margin-right: 270px;
     margin-bottom: 20px;
     font-weight: bold;
-    /*position: absolute;*/
+    position: absolute;
     right: 870px; /* Move button*/
 }
 
-/*.add-section::before {
+.add-section::before {
     content: '';
     position: absolute;
     left: 14px;
@@ -186,7 +174,7 @@ button:hover {
     height: 8px;
     border-radius: 50%;
     z-index: 1;
-}*/
+}
 
 .center-line {
     position: absolute;
@@ -350,24 +338,24 @@ select {
     .timeline {
         margin-left: 20px;
     }
-    
+
     .left {
         width: 180px;
         margin-right: 20px;
     }
-    
+
     .center-line {
         left: 200px;
     }
-    
+
     .add-section button {
         margin-right: 220px;
     }
-    
+
     .entry::before {
         left: -25px;
     }
-    
+
     .add-section {
         margin-left: -25px;
     }
@@ -420,7 +408,7 @@ select {
     .add-section button {
         margin-right: 0;
     }
-    
+
     /* Update the controls positioning */
     .controls {
         display: flex;
@@ -432,17 +420,12 @@ select {
         top: 5px;
         z-index: 5; /* Ensure it appears above other elements */
     }
-    
+
     .overlay {
         width: 95%;
         height: 90%;
         padding: 15px;
     }
-}
-
-#flightList div {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
 }
 
 .normal-button{
